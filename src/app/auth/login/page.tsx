@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Lock, User, LogIn, UserPlus } from 'lucide-react'; // Importing icons from lucide-react
 import { motion, AnimatePresence } from 'framer-motion'; // Importing framer-motion
+import { signIn } from 'next-auth/react';
 
 // Inline SVG for Google Logo
 const GoogleIcon: React.FC = () => (
@@ -76,11 +77,13 @@ const AuthPage: React.FC = () => {
 
   const handleGoogleSignIn = () => {
     console.log('Continue with Google clicked');
+    signIn('google', {callbackUrl:"/"})
     // Example: signIn('google');
   };
 
   const handleGithubSignIn = () => {
     console.log('Continue with GitHub clicked');
+    signIn('github', {callbackUrl:"/"})
     // Example: signIn('github');
   };
 
