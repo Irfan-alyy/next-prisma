@@ -35,16 +35,21 @@ const PostJobPage: React.FC = () => {
     company: '',
     location: '',
     salary: '',
-    type: '',
+    contract: '',
     description: '',
   });
 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here (e.g., send to backend API)
+
     console.log('Job Posting Data:', formData);
-    // In a real app, you might redirect or show a success message
+    fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>{
+      res.json()
+    }).then(data=>console.log(data)
+    ).catch(err=>{
+      console.error("Error occured posting job", err);
+    })
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -254,7 +259,7 @@ const PostJobPage: React.FC = () => {
                       name="type"
                       required
                       className="appearance-none text-black/60 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
-                      value={formData.type}
+                      value={formData.contract}
                       onChange={handleInputChange}
                     >
                       <option value="" disabled>Select Job Type</option>
