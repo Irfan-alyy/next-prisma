@@ -2,6 +2,8 @@
 import './globals.css'; // Your global Tailwind CSS file
 import Navbar from '../components/navbar'; // Adjust path if necessary
 import Head from 'next/head';
+import { SessionProvider } from 'next-auth/react';
+import Footer from '@/components/footer';
 
 export default function RootLayout({
   children,
@@ -16,8 +18,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
       </Head>
       <body>
+        <SessionProvider>
         <Navbar /> {/* Your Navbar component */}
         <main>{children}</main> {/* Your page content */}
+        <Footer/>
+        </SessionProvider>
       </body>
     </html>
   );

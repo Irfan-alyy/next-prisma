@@ -3,9 +3,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const session= useSession()
+
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -23,18 +26,21 @@ const Navbar: React.FC = () => {
             <Link href="/jobs" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Find Jobs
             </Link>
-            <Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+
+            {session.data?.user &&<Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Post a Job
-            </Link>
+            </Link>}
             <Link href="/about" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               About Us
             </Link>
             <Link href="/contact" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Contact
             </Link>
-            <Link href="/auth/login" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+            {session.data?.user ?<button onClick={()=>signOut()}  className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+              Sign Out
+            </button>:<Link href="/auth/login" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
               Sign In
-            </Link>
+            </Link>}
           </div>
 
           {/* Mobile Menu Button */}

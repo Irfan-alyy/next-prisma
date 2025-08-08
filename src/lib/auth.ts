@@ -1,11 +1,35 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import NextAuth from "next-auth"
- import Github from "next-auth/providers/github"
+import Github from "next-auth/providers/github"
 import Google from "next-auth/providers/google";
-const prisma= new PrismaClient()
- 
+import Credentials from "next-auth/providers/credentials"
+import prisma from "./prisma";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
     providers: [Github, Google],
+    session: {
+        strategy: "jwt",
+        maxAge: 24*60*60*1000,
+    },
+    callbacks:{
+        async jwt({token,user}) {
+            if(user){
+                token.id= user.id,
+                token.name=user.name
+            }
+            return token
+        },
+        async session 
+        ({session, token}) {
+            if(session.user){
+                session.user.id= token.id as string
+                session.user.name= token.name
+            }
+            return session
+            
+        }
+
+    }
+  
 })
