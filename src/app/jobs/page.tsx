@@ -2,28 +2,31 @@ import Link from 'next/link';
 import { Search, Briefcase, MapPin, DollarSign } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import prisma from '@/lib/prisma';
 
-
 // Animation variants for job cards
-const cardVariants: Variants = {
+const cardVariants:any  = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
 const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string }> }) => {
   // Filter jobs based on search query (simplified for demo)
-  let filteredJobs = []
+  let filteredJobs:Array<any>=[]
   try {
     const { search } = await searchParams;
     const query = search as string
     let where={}
     if (search) {
-      where.OR = [
+      where = 
+      {
+        OR:[
         { title: { contains: search, mode: 'insensitive' } },
         { company: { contains: search, mode: 'insensitive' } },
-      ];
+        { contract: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+      ]}
     }
+    console.log(where,"where");
     filteredJobs = await prisma.job.findMany({
-      where,
       orderBy:{postedAt:"desc"},
       include:{postedBy:true}
     })
@@ -82,9 +85,6 @@ return (
               filteredJobs.map((job) => (
                 <div
                   key={job.id}
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate="visible"
                   className="bg-white rounded-lg shadow-lg p-8 transform transition duration-300 hover:scale-105 hover:shadow-xl"
                 >
                   <div className="flex justify-center mb-4">

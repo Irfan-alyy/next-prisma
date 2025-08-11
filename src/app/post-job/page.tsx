@@ -44,10 +44,22 @@ const PostJobPage: React.FC = () => {
     e.preventDefault();
 
     console.log('Job Posting Data:', formData);
-    fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>{
+    fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>
       res.json()
-    }).then(data=>console.log(data)
+    ).then(data=>{
+      console.log(data);
+      setFormData({
+        title: '',
+        company: '',
+        location: '',
+        salary: '',
+        contract: '',
+        description: '',
+      });
+      alert("Job created Successfully")
+    }
     ).catch(err=>{
+      alert("Error occured Posting Job")
       console.error("Error occured posting job", err);
     })
   };
@@ -56,7 +68,6 @@ const PostJobPage: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
     // Show loading state while session is being fetched
     if (status === 'loading') {
       return (
@@ -256,7 +267,7 @@ const PostJobPage: React.FC = () => {
                     </div>
                     <select
                       id="type"
-                      name="type"
+                      name="contract"
                       required
                       className="appearance-none text-black/60 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                       value={formData.contract}
