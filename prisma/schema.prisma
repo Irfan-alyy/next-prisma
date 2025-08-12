@@ -94,6 +94,7 @@ model Application {
   status      String   @default("PENDING")
   jobId       String
   userId      String
+  resume      String?
   job         Job      @relation(fields: [jobId], references: [id])
   applicant   User     @relation(fields: [userId], references: [id])
 

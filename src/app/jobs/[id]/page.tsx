@@ -7,21 +7,8 @@ import Link from 'next/link';
 import { Briefcase, MapPin, DollarSign, Calendar, FileText, Send, LogIn, Upload, Mail } from 'lucide-react'; // Icons for job details and form
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Assuming Footer is in src/components/Footer.tsx
 import { data } from 'framer-motion/client';
+import { toast, ToastContainer } from 'react-toastify';
 
-// Sample job data (replace with actual API fetch in a real app)
-const sampleJobs = [
-  {
-    id: '1',
-    title: 'Senior Software Engineer',
-    company: 'Tech Corp',
-    location: 'San Francisco, CA',
-    salary: '$120,000 - $160,000',
-    type: 'Full-Time',
-    description: 'We are looking for a skilled software engineer to join our team. Responsibilities include developing high-quality software solutions, collaborating with cross-functional teams, and maintaining code integrity.',
-    postedDate: '2023-10-01',
-  },
-  // Add more sample jobs as needed
-];
 
 // Variants for animations
 const cardVariants: Variants = {
@@ -84,10 +71,13 @@ const JobDetailsPage: React.FC = () => {
       console.log(`${key}: ${value}`);
     }
     fetch(`/api/job/${job.id}/apply`,{method:"POST", body:submissionData})
-    .then(res=>res.json()).then(data=>{console.log(data);
-    setFormData(prev=>({...prev, name:"",email:"", coverLetter:""}))
+    .then(res=>res.json()).then(data=>{console.log(data,"from data");
+    setFormData(prev=>({...prev, name:"",email:"", coverLetter:""}));
+    toast(data?.message)
+    }).catch(err=>{
+      console.error(err)
+       if(err?.message) toast.error(err?.message)
     })
-    .catch(err=>console.error(err))
     // In a real app, use fetch or axios to post to an API endpoint
   };
 
@@ -320,6 +310,7 @@ const JobDetailsPage: React.FC = () => {
           </div>
         </section>
       </main>
+      <ToastContainer/>
     </div>
   );
 };
