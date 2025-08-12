@@ -25,12 +25,13 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
         { location: { contains: search, mode: 'insensitive' } },
       ]}
     }
-    console.log(where,"where");
+    // console.log(where,"where");
     filteredJobs = await prisma.job.findMany({
+      where,
       orderBy:{postedAt:"desc"},
       include:{postedBy:true}
     })
-  console.log(filteredJobs);
+  // console.log(filteredJobs);
   } catch (error) {
   console.log("Error Occured during fetching jobs", error)
 }

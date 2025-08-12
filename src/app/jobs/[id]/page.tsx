@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Briefcase, MapPin, DollarSign, Calendar, FileText, Send, LogIn, Upload, Mail } from 'lucide-react'; // Icons for job details and form
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Assuming Footer is in src/components/Footer.tsx
+import { data } from 'framer-motion/client';
 
 // Sample job data (replace with actual API fetch in a real app)
 const sampleJobs = [
@@ -50,6 +51,7 @@ const JobDetailsPage: React.FC = () => {
   const jobId = params?.id as string;
 
   const [job, setJob] = useState<any>(null);
+  const [loading,setLoading]= useState<Boolean>(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -59,19 +61,33 @@ const JobDetailsPage: React.FC = () => {
 
   useEffect(() => {
     // Simulate fetching job by ID (replace with API call)
-    const foundJob = sampleJobs[0]
-    setJob(foundJob);
+    const fetchJob=()=>{
+      setLoading(true)
+    fetch(`/api/job/${jobId}`).then(res=>res.json()).then(data=>setJob(data)).catch(err=>{
+      console.log(err)
+    }).finally(()=>setLoading(false))
+    }
+    fetchJob()
   }, [jobId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle application submission (e.g., send to backend with FormData for CV upload)
+    
     const submissionData = new FormData();
     submissionData.append('name', formData.name);
+    submissionData.append('userId', session?.user.id);
     submissionData.append('email', formData.email);
     submissionData.append('coverLetter', formData.coverLetter);
     if (formData.cv) submissionData.append('cv', formData.cv);
-    console.log('Application Data:', submissionData);
+    for (const [key, value] of submissionData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    fetch(`/api/job/${job.id}/apply`,{method:"POST", body:submissionData})
+    .then(res=>res.json()).then(data=>{console.log(data);
+    setFormData(prev=>({...prev, name:"",email:"", coverLetter:""}))
+    })
+    .catch(err=>console.error(err))
     // In a real app, use fetch or axios to post to an API endpoint
   };
 
@@ -85,7 +101,7 @@ const JobDetailsPage: React.FC = () => {
     setFormData((prev) => ({ ...prev, cv: file }));
   };
 
-  if (status === 'loading') {
+  if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 font-inter">
         <motion.div
@@ -236,7 +252,7 @@ const JobDetailsPage: React.FC = () => {
                     name="name"
                     type="text"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black transition duration-200"
                     placeholder="Full Name"
                     value={formData.name}
                     onChange={handleInputChange}
@@ -253,7 +269,7 @@ const JobDetailsPage: React.FC = () => {
                     name="email"
                     type="email"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 text-black focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -270,7 +286,7 @@ const JobDetailsPage: React.FC = () => {
                     name="coverLetter"
                     rows={6}
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 text-black focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                     placeholder="Cover Letter"
                     value={formData.coverLetter}
                     onChange={handleInputChange}
@@ -288,7 +304,7 @@ const JobDetailsPage: React.FC = () => {
                     type="file"
                     accept=".pdf,.doc,.docx"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 text-black border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                     onChange={handleFileChange}
                   />
                 </div>
