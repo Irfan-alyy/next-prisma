@@ -2,12 +2,15 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth"
 import Github from "next-auth/providers/github"
 import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials"
+import NodeMailer from "next-auth/providers/nodemailer"
 import prisma from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
-    providers: [Github, Google],
+    providers: [Github, Google, NodeMailer({
+        server: process.env.EMAIL_SERVER,
+        from: process.env.EMAIL_FROM,
+    })],
     session: {
         strategy: "jwt",
         maxAge: 24*60*60*1000,

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Lock, User, LogIn, UserPlus } from 'lucide-react'; // Importing icons from lucide-react
-import { motion, AnimatePresence } from 'framer-motion'; // Importing framer-motion
+import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion
 import { signIn } from 'next-auth/react';
 
 // Inline SVG for Google Logo
@@ -37,13 +37,13 @@ const GithubIcon: React.FC = () => (
 );
 
 // Variants for Framer Motion animations
-const cardVariants = {
+const cardVariants:Variants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3, ease: "easeIn" } },
 };
 
-const itemVariants = {
+const itemVariants:Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
 };
@@ -86,6 +86,12 @@ const AuthPage: React.FC = () => {
     signIn('github', {callbackUrl:"/"})
     // Example: signIn('github');
   };
+  const handleEmailSignIn = (e:React.FormEvent)=> {
+    e.preventDefault();
+    console.log('Continue with Magic Link clicked');
+    signIn('nodemailer', {email:email,callbackUrl:"/"})
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4 font-inter">
@@ -150,8 +156,47 @@ const AuthPage: React.FC = () => {
             <div className="flex-grow border-t border-gray-300"></div>
           </motion.div>
 
-          {/* Email/Password Form */}
           <motion.form
+            onSubmit={handleEmailSignIn}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.6, // Delay form fields after social buttons
+                },
+              },
+            }}
+            className="space-y-6"
+          >
+             <motion.div variants={itemVariants} className="relative">
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none text-black block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </motion.div>
+          <motion.button
+              variants={itemVariants}
+              type='submit'
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
+            >
+              <LogIn className="h-5 w-5 mr-2" /> Sign In With Email
+          </motion.button>
+          </motion.form>
+          {/* Email/Password Form */}
+          {/* <motion.form
             onSubmit={handleSubmit}
             initial="hidden"
             animate="visible"
@@ -203,7 +248,7 @@ const AuthPage: React.FC = () => {
               />
             </motion.div>
 
-            <motion.div variants={itemVariants} className="relative">
+            {/* <motion.div variants={itemVariants} className="relative">
               <label htmlFor="password" className="sr-only">Password</label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -219,9 +264,9 @@ const AuthPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-            </motion.div>
+            </motion.div> */}
 
-            {!isLogin && (
+            {/* {!isLogin && (
               <motion.div variants={itemVariants} className="relative">
                 <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -239,27 +284,27 @@ const AuthPage: React.FC = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </motion.div>
-            )}
-
+            )} */}
+{/* 
             <motion.button
               variants={itemVariants}
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
             >
-              {isLogin ? (
+              <LogIn className="h-5 w-5 mr-2" /> Sign In With Email */}
+              {/* {isLogin ? (
                 <>
-                  <LogIn className="h-5 w-5 mr-2" /> Sign In
                 </>
               ) : (
                 <>
                   <UserPlus className="h-5 w-5 mr-2" /> Sign Up
                 </>
-              )}
-            </motion.button>
-          </motion.form>
+              )} */}
+            {/* </motion.button> */}
+          {/* </motion.form> */} 
 
           {/* Toggle between Login and Signup */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.5 }}
@@ -288,9 +333,9 @@ const AuthPage: React.FC = () => {
                 </button>
               </p>
             )}
-          </motion.div>
+          </motion.div> */}
 
-          {isLogin && (
+          {/* {isLogin && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -301,7 +346,7 @@ const AuthPage: React.FC = () => {
                 Forgot your password?
               </Link>
             </motion.div>
-          )}
+          )} */}
         </motion.div>
       </AnimatePresence>
     </div>
