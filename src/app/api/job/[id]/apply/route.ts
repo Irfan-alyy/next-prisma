@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { unlink, writeFile } from "fs/promises";
+import { error } from "console";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if(error?.code==="P2002"){
             return NextResponse.json({message:"You can't apply multiple times for same job"},{status:400})
         }
+        console.log(error);
+        
         return NextResponse.json({ error }, { status: 500 })
     }
 }

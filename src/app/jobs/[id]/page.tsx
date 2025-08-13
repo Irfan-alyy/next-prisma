@@ -38,7 +38,7 @@ const JobDetailsPage: React.FC = () => {
   const jobId = params?.id as string;
 
   const [job, setJob] = useState<any>(null);
-  const [loading,setLoading]= useState<Boolean>(false)
+  const [loading, setLoading] = useState<Boolean>(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -48,11 +48,11 @@ const JobDetailsPage: React.FC = () => {
 
   useEffect(() => {
     // Simulate fetching job by ID (replace with API call)
-    const fetchJob=()=>{
+    const fetchJob = () => {
       setLoading(true)
-    fetch(`/api/job/${jobId}`).then(res=>res.json()).then(data=>setJob(data)).catch(err=>{
-      console.log(err)
-    }).finally(()=>setLoading(false))
+      fetch(`/api/job/${jobId}`).then(res => res.json()).then(data => setJob(data)).catch(err => {
+        console.log(err)
+      }).finally(() => setLoading(false))
     }
     fetchJob()
   }, [jobId]);
@@ -60,7 +60,7 @@ const JobDetailsPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle application submission (e.g., send to backend with FormData for CV upload)
-    
+
     const submissionData = new FormData();
     submissionData.append('name', formData.name);
     submissionData.append('userId', session?.user.id);
@@ -70,14 +70,24 @@ const JobDetailsPage: React.FC = () => {
     for (const [key, value] of submissionData.entries()) {
       console.log(`${key}: ${value}`);
     }
-    fetch(`/api/job/${job.id}/apply`,{method:"POST", body:submissionData})
-    .then(res=>res.json()).then(data=>{console.log(data,"from data");
-    setFormData(prev=>({...prev, name:"",email:"", coverLetter:""}));
-    toast(data?.message)
-    }).catch(err=>{
-      console.error(err)
-       if(err?.message) toast.error(err?.message)
-    })
+    fetch(`/api/job/${job.id}/apply`, { method: "POST", body: submissionData })
+      .then(async res => {
+        if (!res.ok) {
+         return res.json().then(errorData => {
+          console.log(errorData,"error data");
+           throw new Error(errorData?.message || `Error occured with status ${res?.status}`)
+          })
+        }
+         return res.json()
+      })
+      .then(data => {
+        console.log(data);
+        setFormData(prev => ({ ...prev, name: "", email: "", coverLetter: "" }));
+        toast.success(data?.message)
+      }).catch(err => {
+        if (err?.message) toast.error(err?.message)
+        console.error(err)
+      })
     // In a real app, use fetch or axios to post to an API endpoint
   };
 
@@ -310,7 +320,7 @@ const JobDetailsPage: React.FC = () => {
           </div>
         </section>
       </main>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };
