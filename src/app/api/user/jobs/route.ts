@@ -12,11 +12,9 @@ export async function GET(req: NextRequest) {
     const jobs = await prisma.job.findMany({
       where: { postedById: session.user.id },
     });
-    console.log(jobs);
     return NextResponse.json({ jobs }, { status: 200 });
   } catch (error) {
     console.log(error);
-    
     return NextResponse.json({ error }, { status: 500 });
   }
 }

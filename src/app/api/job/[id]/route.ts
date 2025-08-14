@@ -18,8 +18,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params
     try {
         const data = await prisma.job.delete({ where: { id } })
-
-        return NextResponse.json({ message: "Job deleted successfully" })
+        return NextResponse.json({ message: "Job deleted successfully" },{status:200})
 
     }
     catch (error:any) {

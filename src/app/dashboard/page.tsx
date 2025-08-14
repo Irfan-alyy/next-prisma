@@ -5,47 +5,51 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { User, Briefcase, FileText, Edit, Trash2, LogIn } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { toast } from 'react-toastify/unstyled';
+
+interface User {
+  createdAt: Date,
+  email: String
+  emailVerified: Date | null
+  id: String
+  image: String
+  name: String
+  updatedAt: Date
+}
+
+interface Job {
+  id: String,
+  title: String,
+  description: String,
+  salary: String,
+  postedAt: Date
+  company: String,
+  location: String,
+  contract: String
+  postedById: String
+}
+interface Application {
+  id: String,
+  description: String,
+  appliedAt: Date,
+  status: "PENDING" | "ACCEPTED" | "REJECTED",
+  jobId: String,
+  userId: String,
+  resume: String,
+  job: Job
+}
+
+
+
 
 // Mock data (replace with API calls)
 const mockUser = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: '/avatar-placeholder.png',
+  name: '',
+  email: '',
+  avatar: '',
 };
 
-const mockJobs = [
-  {
-    id: '1',
-    title: 'Senior Software Engineer',
-    company: 'Tech Corp',
-    location: 'San Francisco, CA',
-    status: 'Active',
-  },
-  {
-    id: '2',
-    title: 'Frontend Developer',
-    company: 'Web Solutions',
-    location: 'Remote',
-    status: 'Closed',
-  },
-];
 
-const mockApplications = [
-  {
-    id: '1',
-    jobTitle: 'Senior Software Engineer',
-    company: 'Tech Corp',
-    appliedDate: '2023-10-01',
-    status: 'Pending',
-  },
-  {
-    id: '2',
-    jobTitle: 'Frontend Developer',
-    company: 'Web Solutions',
-    appliedDate: '2023-10-05',
-    status: 'Accepted',
-  },
-];
 
 // Animation variants
 const cardVariants: Variants = {
@@ -72,18 +76,33 @@ const buttonVariants: Variants = {
 const DashboardPage: React.FC = () => {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<'profile' | 'jobs' | 'applications'>('profile');
-  const [user, setUser] = useState(mockUser);
-  const [jobs, setJobs] = useState(mockJobs);
-  const [applications, setApplications] = useState(mockApplications);
+  const [user, setUser] = useState<User>();
+  const [jobs, setJobs] = useState<Array<Job>>([]);
+  const [applications, setApplications] = useState<Array<Application>>([]);
 
   useEffect(() => {
-    // TODO: Fetch user data, jobs, and applications from API
-        fetch('/api/user').then(res => res.json()).then(data=>setUser(data?.user));
-        fetch('/api/user/jobs').then(res => res.json()).then(data=>setJobs(data?.jobs));
-    // fetch('/api/user/applications').then(res => res.json()).then(setApplications);
+    fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user));
+    fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs));
+    fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications));
   }, []);
-  console.log(jobs);
-  
+
+
+
+
+  const handleJobDelete=async(id:string)=>{
+    const response= await fetch(`/api/job/${id}`, {method:"DELETE"})
+    if(response.ok){
+      toast.warning("Job Deleted Successfully")
+    }
+    console.log(await response.json());
+    
+  }
+  const handleJobEdit=async(id:string)=>{
+
+
+  }
+
+
 
   if (status === 'loading') {
     return (
@@ -175,31 +194,28 @@ const DashboardPage: React.FC = () => {
             <div className="flex justify-center space-x-4 mb-8">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
-                  activeTab === 'profile'
+                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'profile'
                     ? 'bg-indigo-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 Profile
               </button>
               <button
                 onClick={() => setActiveTab('jobs')}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
-                  activeTab === 'jobs'
+                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'jobs'
                     ? 'bg-indigo-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 My Jobs
               </button>
               <button
                 onClick={() => setActiveTab('applications')}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
-                  activeTab === 'applications'
+                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'applications'
                     ? 'bg-indigo-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 My Applications
               </button>
@@ -216,7 +232,7 @@ const DashboardPage: React.FC = () => {
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Profile</h2>
                   <div className="flex items-center justify-center mb-6">
                     <img
-                      src={user?.image}
+                      src={user?.image as string}
                       alt="User Avatar"
                       className="w-24 h-24 rounded-full shadow-md"
                     />
@@ -224,11 +240,11 @@ const DashboardPage: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <User className="h-6 w-6 text-indigo-600 mr-4" />
-                      <p className="text-gray-700"><span className="font-semibold">Name:</span> {user.name}</p>
+                      <p className="text-gray-700"><span className="font-semibold">Name:</span> {user?.name}</p>
                     </div>
                     <div className="flex items-center">
                       <FileText className="h-6 w-6 text-indigo-600 mr-4" />
-                      <p className="text-gray-700"><span className="font-semibold">Email:</span> {user.email}</p>
+                      <p className="text-gray-700"><span className="font-semibold">Email:</span> {user?.email}</p>
                     </div>
                     <motion.button
                       variants={buttonVariants}
@@ -251,20 +267,20 @@ const DashboardPage: React.FC = () => {
                     <div className="space-y-4">
                       {jobs.map((job) => (
                         <motion.div
-                          key={job.id}
+                          key={job.id as string}
                           variants={itemVariants}
                           className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
                         >
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
                             <p className="text-gray-600">{job.company} - {job.location}</p>
-                            <p className="text-gray-500 text-sm">Status: {job.status}</p>
+                            <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
                           </div>
                           <div className="flex space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-800">
+                            <button className="text-indigo-600 hover:text-indigo-800" onClick={()=>handleJobEdit(job.id)}>
                               <Edit className="h-5 w-5" />
                             </button>
-                            <button className="text-red-600 hover:text-red-800">
+                            <button className="text-red-600 hover:text-red-800" onClick={()=>handleJobDelete(job.id)}>
                               <Trash2 className="h-5 w-5" />
                             </button>
                           </div>
@@ -290,14 +306,14 @@ const DashboardPage: React.FC = () => {
                     <div className="space-y-4">
                       {applications.map((app) => (
                         <motion.div
-                          key={app.id}
+                          key={app.id as string}
                           variants={itemVariants}
                           className="border border-gray-200 rounded-md p-4"
                         >
-                          <h3 className="text-lg font-semibold text-gray-800">{app.jobTitle}</h3>
-                          <p className="text-gray-600">{app.company}</p>
-                          <p className="text-gray-500 text-sm">Applied: {app.appliedDate}</p>
-                          <p className="text-gray-500 text-sm">Status: {app.status}</p>
+                          <h3 className="text-lg font-semibold text-gray-800">{app.job?.title}</h3>
+                          <p className="text-gray-600">{app?.job?.company}</p>
+                          <p className="text-gray-500 text-sm">Applied At: {(new Date(app?.appliedAt))?.toLocaleString()}</p>
+                          <p className="text-gray-500 text-sm">Status: {app?.status}</p>
                         </motion.div>
                       ))}
                     </div>
