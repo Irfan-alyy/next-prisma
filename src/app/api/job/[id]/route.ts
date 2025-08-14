@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     }
     catch (error:any) {
-        if (error?.code === "P2025") return NextResponse.json({ message: `No job found with ${id} id`, error }, { status: 404 })
+        if (error?.code === "P2025") return NextResponse.json({ message: `No job found with id '${id}'`, error }, { status: 404 })
         return NextResponse.json({ error }, { status: 500 })
     }
 }

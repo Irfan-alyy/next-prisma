@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Briefcase, MapPin, DollarSign, FileText, Send, LogIn } from 'lucide-react'; // Importing icons from lucide-react
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion for animations
 import { useSession } from 'next-auth/react';
+import { ToastContainer, toast } from 'react-toastify';
 
 // Animation variants for form card
 const cardVariants:Variants = {
@@ -47,7 +48,7 @@ const PostJobPage: React.FC = () => {
     fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>
       res.json()
     ).then(data=>{
-      console.log(data);
+      // console.log(data);
       setFormData({
         title: '',
         company: '',
@@ -56,10 +57,10 @@ const PostJobPage: React.FC = () => {
         contract: '',
         description: '',
       });
-      alert("Job created Successfully")
+      toast.success("Job created Successfully")
     }
     ).catch(err=>{
-      alert("Error occured Posting Job")
+      toast.error("Error occured Posting Job")
       console.error("Error occured posting job", err);
     })
   };
@@ -342,6 +343,7 @@ const PostJobPage: React.FC = () => {
             </Link>
           </div>
         </section>
+        <ToastContainer/>
       </main>
     </div>
   );

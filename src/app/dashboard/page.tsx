@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { User, Briefcase, FileText, Edit, Trash2, LogIn } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { toast } from 'react-toastify/unstyled';
+import {ToastContainer,toast} from "react-toastify"
 
 interface User {
   createdAt: Date,
@@ -89,15 +89,20 @@ const DashboardPage: React.FC = () => {
 
 
 
-  const handleJobDelete=async(id:string)=>{
+  const handleJobDelete=async(id:String)=>{
     const response= await fetch(`/api/job/${id}`, {method:"DELETE"})
     if(response.ok){
-      toast.warning("Job Deleted Successfully")
+      toast.warning("Job Deleted Successfully");
+      const remainingJobs=jobs.filter(job=>job.id!==id)
+      setJobs(remainingJobs)
+      return 
     }
-    console.log(await response.json());
-    
+    const data= await response.json();
+    toast.error(data?.message || "Failed to delete Job")
   }
-  const handleJobEdit=async(id:string)=>{
+
+  
+  const handleJobEdit=async(id:String)=>{
 
 
   }
@@ -324,6 +329,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </section>
       </main>
+      <ToastContainer/>
     </div>
   );
 };
