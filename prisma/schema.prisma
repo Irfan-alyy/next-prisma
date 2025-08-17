@@ -91,7 +91,7 @@ model Application {
   id          String   @id @default(cuid())
   description String
   appliedAt   DateTime @default(now())
-  status      String   @default("PENDING")
+  status      String   @default("PENDING") //"PENDING", "REVIEW", "ACCEPTED", "REJECTED"
   jobId       String
   userId      String
   resume      String?
