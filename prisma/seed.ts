@@ -24,7 +24,7 @@ async function seedJobs() {
             }
             jobs.push(data)
         }
-        console.log("Seeded 25 jobs ✅ for", user.name, user.id);
+        console.log("Seeded 25 jobs for", user.name, user.id);
     })
     const result = await prisma.job.createMany({ data: jobs })
     console.log(result);
@@ -49,7 +49,7 @@ async function seedApplication() {
                 status: faker.helpers.arrayElement(["PENDING", "REVIEW", "ACCEPTED", "REJECTED"]),
                 jobId: job.id,
                 userId: user.id,
-                resume: faker.internet.url(), // dummy resume link
+                resume: faker.internet.url(),
             }
             const result = await prisma.application.create({ data })
             console.log(result);
@@ -67,23 +67,22 @@ async function createUser(email: string) {
     const user = await prisma.user.create({
         data: {
             name: faker.person.fullName(),
-            email: email, // you provide Yopmail
+            email: email,
             image: faker.image.avatar(),
-            emailVerified: new Date(), // ✅ mark as verified
+            emailVerified: new Date(), 
         },
     });
 
-    console.log("✅ Created verified user:", user);
+    console.log("Created verified user:", user);
 }
 
 
 
 async function main() {
-    // 👇 replace this email with the Yopmail you provide each run
-    const yopmail = "irfan@yopmail.com";
-    // await seedApplication();
-    // await seedJobs();
-    await createUser(yopmail);
+    // const yopmail = "irfan@yopmail.com";
+    // await createUser(yopmail);
+    await seedJobs();
+    await seedApplication();
 }
 
 
