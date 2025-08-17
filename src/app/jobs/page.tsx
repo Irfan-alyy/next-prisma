@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, Briefcase, MapPin, DollarSign } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
+import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import prisma from '@/lib/prisma';
 
 // Animation variants for job cards
@@ -8,11 +8,16 @@ const cardVariants:any  = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string }> }) => {
+const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string , page:string}> }) => {
   // Filter jobs based on search query (simplified for demo)
+  const { search,page } = await searchParams;
   let filteredJobs:Array<any>=[]
+  const currentPage=parseInt(page) || 1;
+  const JobsPerPage= 6;
+  
+  let totalJobs=0;
+
   try {
-    const { search } = await searchParams;
     const query = search as string
     let where={}
     if (search) {
@@ -29,12 +34,16 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
     filteredJobs = await prisma.job.findMany({
       where,
       orderBy:{postedAt:"desc"},
-      include:{postedBy:true}
+      include:{postedBy:true},
+      skip: (currentPage-1)*JobsPerPage,
+      take: JobsPerPage
     })
-  // console.log(filteredJobs);
+    totalJobs= await prisma.job.count({where})
+    // console.log(filteredJobs);
   } catch (error) {
   console.log("Error Occured during fetching jobs", error)
 }
+const totalPages = Math.ceil( totalJobs/JobsPerPage)
 
 return (
   <div className="min-h-screen bg-gray-50 font-inter">
@@ -127,6 +136,70 @@ return (
             )}
           </div>
         </div>
+      
+            {/* Pagination Controls */}
+          <div className='flex flex-wrap items-center w-full '>
+
+            {totalPages > 1 && (
+              <div className="mt-12 flex justify-center space-x-2 flex-wrap px-30 items-center gap-3">
+                {/* Previous Button */}
+                <div>
+                  <Link
+                    href={{
+                      pathname: '/jobs',
+                      query: { search, page: currentPage > 1 ? currentPage - 1 : 1 },
+                    }}
+                    className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                      currentPage === 1
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    } shadow-lg transition duration-300 transform`}
+                  >
+                    <ChevronLeft className="h-5 w-5 mr-2" />
+                    Previous
+                  </Link>
+                </div>
+
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <div
+                  key={pageNum}
+                  >
+                    <Link
+                      href={{
+                        pathname: '/jobs',
+                        query: { search, page: pageNum },
+                      }}
+                      className={`px-4 py-2 rounded-md text-sm font-medium ${
+                        pageNum === currentPage
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                      } shadow-lg transition duration-300 transform`}
+                    >
+                      {pageNum}
+                    </Link>
+                  </div>
+                ))}
+
+                {/* Next Button */}
+                <div >
+                  <Link
+                    href={{
+                      pathname: '/jobs',
+                      query: { search, page: currentPage < totalPages ? currentPage + 1 : totalPages },
+                    }}
+                    className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                      currentPage === totalPages
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      } shadow-lg transition duration-300 transform`}
+                      >
+                    Next
+                    <ChevronRight className="h-5 w-5 ml-2" />
+                  </Link>
+                </div>
+              </div>)}
+              </div>
       </section>
 
       {/* Call to Action Section */}
