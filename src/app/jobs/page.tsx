@@ -13,7 +13,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
   const { search, page } = await searchParams;
   let filteredJobs: Array<any> = []
   const currentPage = parseInt(page) || 1;
-  const JobsPerPage = 6;
+  const JobsPerPage = 9;
 
   let totalJobs = 0;
 
@@ -142,7 +142,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
           <div className='flex flex-wrap items-center w-full justify-center'>
 
             {totalPages > 1 && (
-              <div className="mt-12 flex justify-center flex-wrap px-30 items-center">
+              <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
                 {/* Previous Button */}
                 <div>
                   <Link
@@ -167,7 +167,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                       pathname: '/jobs',
                       query: { search, page: 1 },
                     }}
-                    className={`px-4 mx-2 py-2 rounded-md text-sm font-medium
+                    className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
                   >
@@ -175,7 +175,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                   </Link>}
 
 
-                {currentPage > 3 && <div className='px-4 mx-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                {currentPage > 3 && <div className='px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                    shadow-lg transition duration-300 transform '>...</div>}
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
                   return pageNum < currentPage + 5 ? (<div
@@ -187,7 +187,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                           pathname: '/jobs',
                           query: { search, page: pageNum },
                         }}
-                        className={`px-4 py-2 mx-2 rounded-md text-sm font-medium ${pageNum === currentPage
+                        className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${pageNum === currentPage
                             ? 'bg-indigo-600 text-white'
                             : 'bg-white text-gray-700 hover:bg-gray-100'
                           } shadow-lg transition duration-300 transform`}
@@ -196,7 +196,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                       </Link>}
                   </div>) : ""
                 })}
-                {currentPage + 5 < totalPages && <div className='px-4 mx-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                {currentPage + 5 < totalPages && <div className='px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                       } shadow-lg transition duration-300 transform '>...</div>}
 
                 {currentPage < totalPages-4 &&
@@ -205,7 +205,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                       pathname: '/jobs',
                       query: { search, page: totalPages },
                     }}
-                    className={`px-4 mx-2 py-2 rounded-md text-sm font-medium
+                    className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
                   >
