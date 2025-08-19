@@ -4,11 +4,24 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import { Menu, X, UserCircle, LogOut, Briefcase, LayoutDashboard, LogOutIcon } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
+
+const dropdownVariants: Variants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
+};
+
+const mobileMenuVariants: Variants = {
+  hidden: { opacity: 0, height: 0 },
+  visible: { opacity: 1, height: 'auto', transition: { duration: 0.3, ease: 'easeOut' } },
+};
+
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen]=useState(false)
   const session= useSession()
-
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -27,7 +40,7 @@ const Navbar: React.FC = () => {
               Find Jobs
             </Link>
 
-            {session.data?.user &&<Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+            {session.status==="authenticated" &&<Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Post a Job
             </Link>}
             <Link href="/about" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
@@ -36,12 +49,46 @@ const Navbar: React.FC = () => {
             <Link href="/contact" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Contact
             </Link>
-            {session.data?.user ?<button onClick={()=>signOut()}  className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
-              Sign Out
-            </button>:<Link href="/auth/login" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+            {session.data?.user && 
+            <button onClick={()=>setIsDropdownOpen(!isDropdownOpen)} className='text-gray-700 hover:text-indigo-600 '>
+            <UserCircle className='h-6 w-6' />
+            </button>}
+            
+
+
+            {session.status!=="authenticated" && <Link href="/auth/login" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
               Sign In
             </Link>}
+
           </div>
+          {session.status==="authenticated" && isDropdownOpen && (
+                  <motion.div
+                    variants={dropdownVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="absolute right-0 mt-40 w-48 bg-white rounded-md shadow-lg py-2 z-10 border border-gray-200"
+                  >
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <LayoutDashboard className="h-5 w-5 mr-2" />
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        signOut({ callbackUrl: '/' });
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+
 
           {/* Mobile Menu Button */}
           <div className="-mr-2 flex md:hidden">
@@ -114,13 +161,35 @@ const Navbar: React.FC = () => {
           >
             Contact
           </Link>
-          <Link
-            href="/auth/login"
-            className="block w-full text-center mt-2 px-3 py-2 bg-indigo-600 text-white rounded-md text-base font-medium hover:bg-indigo-700 transition duration-300"
-            onClick={() => setIsOpen(false)} // Close menu on click
-          >
-            Sign In
-          </Link>
+            {session.status==="authenticated" ?(
+            <div className='flex w-full justify-between'>
+                <Link
+                  href="/dashboard"
+                  className="text-gray-700 hover:text-indigo-600 px-3 py-2  transition duration-200"
+                  onClick={()=>setIsOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    signOut({ callbackUrl: '/' });
+                    ()=>setIsOpen(false);
+                  }}
+                  className="text-gray-700 hover:text-indigo-600 px-5 py-2  text-left"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div>
+                <Link
+                  href="/auth/login"
+                  className="text-gray-700 hover:text-indigo-600 px-3 py-2  transition duration-200"
+                  onClick={()=>setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              </div>)}
         </div>
       </div>
     </nav>
