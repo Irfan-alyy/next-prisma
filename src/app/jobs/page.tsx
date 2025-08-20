@@ -96,7 +96,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                 filteredJobs.map((job) => (
                   <div
                     key={job.id}
-                    className="bg-white rounded-lg shadow-lg p-8 transform transition duration-300 hover:scale-105 hover:shadow-xl"
+                    className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-8 transform transition duration-300 hover:scale-105 hover:shadow-xl"
                   >
                     <div className="flex justify-center mb-4">
                       <Briefcase className="h-12 w-12 text-indigo-600" />
@@ -114,7 +114,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                     <p className="text-gray-600 mb-4">{job.contract}</p>
                     <Link
                       href={`/jobs/${job.id}`}
-                      className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300 transform hover:scale-105"
+                      className="inline-flex items-center w-fit justify-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300 transform hover:scale-105"
                     >
                       View Details
                       <svg

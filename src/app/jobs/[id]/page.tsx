@@ -224,7 +224,7 @@ const JobDetailsPage: React.FC = () => {
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Job Type:</span> {job.type}</p>
+                  <p className="text-gray-700"><span className="font-semibold">Job Type:</span> {job.contract}</p>
                 </div>
                 <div className="flex items-start">
                   <FileText className="h-6 w-6 text-indigo-600 mr-4 mt-1" />
