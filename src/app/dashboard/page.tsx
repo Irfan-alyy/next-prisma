@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { User, Briefcase, FileText, Edit, Trash2, LogIn } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import {ToastContainer,toast} from "react-toastify"
+import DetailsModal from '@/components/DetailsModal';
 
 interface User {
   createdAt: Date,
@@ -79,6 +80,10 @@ const DashboardPage: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<Array<Job>>([]);
   const [applications, setApplications] = useState<Array<Application>>([]);
+  const [isDetailModalOpen,setIsDetailModalOpen]=useState<Boolean>(false)
+  const [currentDetail,setCurrentDetail]=useState<Job |Application >()
+  const [currentDetailType,setCurrentDetailType]=useState<'job' | 'application' >('job')
+
 
   useEffect(() => {
     try {
@@ -106,8 +111,20 @@ const DashboardPage: React.FC = () => {
   }
 
   
-  const handleJobEdit=async(id:String)=>{
+const handleJobModalClose=()=>{
+  setIsDetailModalOpen(false)
+}
 
+  const handleApplicationModal=(application:Application)=>{
+    setCurrentDetail(application)
+    setCurrentDetailType("application")
+    setIsDetailModalOpen(true)
+  }
+
+  const handleJobModal=(job:Job)=>{
+    setCurrentDetail(job)
+    setCurrentDetailType("job")
+    setIsDetailModalOpen(true)
 
   }
 
@@ -270,7 +287,7 @@ const DashboardPage: React.FC = () => {
               {activeTab === 'jobs' && (
                 <div className="space-y-6">
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Job Listings</h2>
-                  {jobs.length === 0 ? (
+                  {jobs?.length === 0 ? (
                     <p className="text-gray-600 text-center">You haven’t posted any jobs yet.</p>
                   ) : (
                     <div className="space-y-4">
@@ -280,13 +297,13 @@ const DashboardPage: React.FC = () => {
                           variants={itemVariants}
                           className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
                         >
-                          <div>
+                          <div onClick={()=>handleJobModal(job)} className='cursor-pointer' >
                             <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
                             <p className="text-gray-600">{job.company} - {job.location}</p>
                             <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
                           </div>
                           <div className="flex space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-800" onClick={()=>handleJobEdit(job.id)}>
+                            <button className="text-indigo-600 hover:text-indigo-800" >
                               <Edit className="h-5 w-5" />
                             </button>
                             <button className="text-red-600 hover:text-red-800" onClick={()=>handleJobDelete(job.id)}>
@@ -309,7 +326,7 @@ const DashboardPage: React.FC = () => {
               {activeTab === 'applications' && (
                 <div className="space-y-6">
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Applications</h2>
-                  {applications.length === 0 ? (
+                  {applications?.length === 0 ? (
                     <p className="text-gray-600 text-center">You haven’t applied to any jobs yet.</p>
                   ) : (
                     <div className="space-y-4">
@@ -317,7 +334,8 @@ const DashboardPage: React.FC = () => {
                         <motion.div
                           key={app.id as string}
                           variants={itemVariants}
-                          className="border border-gray-200 rounded-md p-4"
+                          onClick={()=>handleApplicationModal(app)}
+                          className="border border-gray-200 rounded-md p-4 cursor-pointer"
                         >
                           <h3 className="text-lg font-semibold text-gray-800">{app.job?.title}</h3>
                           <p className="text-gray-600">{app?.job?.company}</p>
@@ -333,6 +351,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </section>
       </main>
+      {isDetailModalOpen && <DetailsModal isOpen={isDetailModalOpen} onClose={handleJobModalClose} type={currentDetailType} data={currentDetail} />}
       <ToastContainer/>
     </div>
   );

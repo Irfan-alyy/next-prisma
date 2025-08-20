@@ -29,3 +29,11 @@ body {
 html, body {
   font-family: 'Inter', sans-serif;
 }
+
+.details-modal:-webkit-scrollbar{
+  display: none
+}
+.details-modal{
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+  }
