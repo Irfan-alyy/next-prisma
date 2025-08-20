@@ -1,7 +1,14 @@
 import Link from 'next/link';
 import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import prisma from '@/lib/prisma';
+import { Metadata } from 'next';
 
+
+
+export const metadata: Metadata = {
+  title: 'Find Jobs',
+  description: 'Find Jobs That suits your skills and comfort',
+}
 // Animation variants for job cards
 const cardVariants: any = {
   hidden: { opacity: 0, y: 20 },

@@ -1,12 +1,16 @@
-'use client'; // This directive is necessary for client-side interactivity in Next.js App Router
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
 // Navbar component (re-used from previous interaction)
 
 
 // Home Page Component
+export const metadata: Metadata = {
+  title: 'Job Board',
+  description: 'Find Jobs That suits your skills and comfort',
+}
 const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
