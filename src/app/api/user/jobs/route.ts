@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
       where: { postedById: session.user.id },
     });
     return NextResponse.json({ jobs }, { status: 200 });
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    console.log(error.message? error.message : "Error occure during fetching jobs");
     return NextResponse.json({ error }, { status: 500 });
   }
 }

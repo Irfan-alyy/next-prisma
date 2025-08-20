@@ -41,8 +41,8 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
     })
     totalJobs = await prisma.job.count({ where })
     // console.log(filteredJobs);
-  } catch (error) {
-    console.log("Error Occured during fetching jobs", error)
+  } catch (error:any) {
+    console.log("Error Occured during fetching jobs", error?.message)
   }
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
 

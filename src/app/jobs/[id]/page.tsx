@@ -63,7 +63,7 @@ const JobDetailsPage: React.FC = () => {
 
     const submissionData = new FormData();
     submissionData.append('name', formData.name);
-    submissionData.append('userId', session?.user.id);
+    submissionData.append('userId', session?.user?.id as string);
     submissionData.append('email', formData.email);
     submissionData.append('coverLetter', formData.coverLetter);
     if (formData.cv) submissionData.append('cv', formData.cv);
@@ -86,9 +86,8 @@ const JobDetailsPage: React.FC = () => {
         toast.success(data?.message)
       }).catch(err => {
         if (err?.message) toast.error(err?.message)
-        console.error(err)
+        console.error(err.message)
       })
-    // In a real app, use fetch or axios to post to an API endpoint
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

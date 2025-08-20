@@ -13,9 +13,8 @@ export async function GET(req: NextRequest) {
       where: { userId: session.user.id }, include:{job:true}
     });
     return NextResponse.json({ applications }, { status: 200 });
-  } catch (error) {
-    console.log(error);
-    
+  } catch (error:any) {
+    console.log(error.message? error.message : "Error occure during fetching applications");
     return NextResponse.json({ error }, { status: 500 });
   }
 }

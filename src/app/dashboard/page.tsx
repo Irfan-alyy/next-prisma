@@ -81,9 +81,13 @@ const DashboardPage: React.FC = () => {
   const [applications, setApplications] = useState<Array<Application>>([]);
 
   useEffect(() => {
-    fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user));
-    fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs));
-    fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications));
+    try {
+      fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user));
+      fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs));
+      fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications));
+    } catch (error:any) {
+      console.log("Error occured in fetching user data", error?.message);
+    }
   }, []);
 
 
