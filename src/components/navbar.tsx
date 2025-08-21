@@ -56,7 +56,7 @@ const Navbar: React.FC = () => {
             
 
 
-            {session.status!=="authenticated" && <Link href="/auth/login" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+            {session.status!=="authenticated" && <Link href="/api/auth/signin" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
               Sign In
             </Link>}
 
@@ -183,7 +183,7 @@ const Navbar: React.FC = () => {
             ) : (
               <div>
                 <Link
-                  href="/auth/login"
+                  href="/api/auth/signin"
                   className="text-gray-700 hover:text-indigo-600 px-3 py-2  transition duration-200"
                   onClick={()=>setIsOpen(false)}
                 >
