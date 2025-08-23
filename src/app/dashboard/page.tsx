@@ -297,11 +297,11 @@ const handleJobModalClose=()=>{
                           variants={itemVariants}
                           className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
                         >
-                          <div onClick={()=>handleJobModal(job)} className='cursor-pointer' >
+                          <Link href={`/dashboard/job/${job.id}`} className='cursor-pointer' >
                             <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
                             <p className="text-gray-600">{job.company} - {job.location}</p>
                             <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
-                          </div>
+                          </Link>
                           <div className="flex space-x-2">
                             <button className="text-indigo-600 hover:text-indigo-800" >
                               <Edit className="h-5 w-5" />
