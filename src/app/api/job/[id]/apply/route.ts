@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         await writeFile(path.join(process.cwd(),fullPath ),buffer)
         fileWritten=true
         return NextResponse.json({message:"You have successfully applied for this Job"})
-    } catch (error) {
+    } catch (error:any) {
         if(createdApp){
             await prisma.application.delete({
             where: { id: createdApp.id }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if(error?.code==="P2002"){
             return NextResponse.json({message:"You can't apply multiple times for same job"},{status:400})
         }
-        console.log(error);
+        console.log(error?.message);
         
         return NextResponse.json({ error }, { status: 500 })
     }
