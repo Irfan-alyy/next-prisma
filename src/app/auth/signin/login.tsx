@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Mail, Lock, User, LogIn, UserPlus } from 'lucide-react'; // Importing icons from lucide-react
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion
 import { signIn } from 'next-auth/react';
+import { Loader } from 'lucide-react';
 
 // Inline SVG for Google Logo
 const GoogleIcon: React.FC = () => (
@@ -54,6 +55,7 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [loading,setLoading]=useState<{provider:string, loading:boolean}>({provider:"",loading:false})
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,18 +78,21 @@ const AuthPage: React.FC = () => {
   };
 
   const handleGoogleSignIn = () => {
+    setLoading({provider:"google",loading:true})
     console.log('Continue with Google clicked');
     signIn('google', {callbackUrl:"/"})
     // Example: signIn('google');
   };
 
   const handleGithubSignIn = () => {
+    setLoading({provider:"github",loading:true})
     console.log('Continue with GitHub clicked');
     signIn('github', {callbackUrl:"/"})
     // Example: signIn('github');
   };
   const handleEmailSignIn = (e:React.FormEvent)=> {
     e.preventDefault();
+    setLoading({provider:"email",loading:true})
     console.log('Continue with Magic Link clicked');
     signIn('nodemailer', {email:email,callbackUrl:"/"})
   };
@@ -130,18 +135,30 @@ const AuthPage: React.FC = () => {
             <motion.button
               variants={itemVariants}
               onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+              disabled={loading.provider==="google" && loading.loading}
+              className="w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
             >
-              <GoogleIcon />
+              { (loading.provider=="google" && loading.loading) && <span className='pr-5'>
+                <Loader/>
+              </span>}
+              <span className='flex items-center justify-between'>
+                <GoogleIcon />
               Continue with Google
+                </span>
             </motion.button>
             <motion.button
               variants={itemVariants}
               onClick={handleGithubSignIn}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+              disabled={loading.provider==="github" && loading.loading}
+              className="w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
             >
-              <GithubIcon />
-              Continue with GitHub
+              { (loading.provider=="github" && loading.loading) && <span className='pr-5'>
+                <Loader/>
+              </span>}
+              <span className='flex items-center justify-between'>
+                <GithubIcon/>
+                  Continue with Github
+                </span>
             </motion.button>
           </motion.div>
 
@@ -190,9 +207,16 @@ const AuthPage: React.FC = () => {
           <motion.button
               variants={itemVariants}
               type='submit'
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
+              disabled={loading.provider==="email" && loading.loading}
+              className="w-full flex justify-center gap-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
             >
-              <LogIn className="h-5 w-5 mr-2" /> Sign In With Email
+              { (loading.provider=="email" && loading.loading) && <span className='pl-10'>
+                <Loader/>
+              </span>}
+              <span className='flex items-center justify-between'>
+                <LogIn />
+              Login with Email
+                </span>
           </motion.button>
           </motion.form>
           {/* Email/Password Form */}

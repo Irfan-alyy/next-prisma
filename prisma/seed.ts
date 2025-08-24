@@ -52,7 +52,7 @@ async function seedApplication() {
                 resume: faker.internet.url(),
             }
             const result = await prisma.application.create({ data })
-            console.log(result);
+            // console.log(result);
 
         })
     })
@@ -81,7 +81,7 @@ async function createUser(email: string) {
 async function main() {
     // const yopmail = "irfan@yopmail.com";
     // await createUser(yopmail);
-    await seedJobs();
+    // await seedJobs();
     await seedApplication();
 }
 

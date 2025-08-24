@@ -15,16 +15,18 @@ export async function GET(
   // }
   try {
     const applications = await prisma.application.findMany({
-      where: { jobId: id },
+      where: { jobId: id, OR:[{status:"PENDING"},{status:"REVIEW"}] },
       select: {
+        id:true,
         appliedAt: true,
         resume: true,
+        description:true,
         status: true,
         userId: true,
         applicant: {
           select: {
             name: true,
-            email: true,
+            email: true
           },
         },
       },
@@ -46,4 +48,20 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+
+export async function PUT(req:NextRequest){
+  const {appId,status}= await req.json()
+  console.log(appId,status);
+  
+  try {
+    const result= await prisma.application.update({where:{id:appId},data:{status:status}})
+    console.log("after update of application",result);
+    return NextResponse.json({message:"updated successfullu",result},{status:200})
+  } catch (error:any) {
+    return NextResponse.json({message:"error updating application",error: error.message? error.message : error},{status:500})
+    
+  }
+
 }

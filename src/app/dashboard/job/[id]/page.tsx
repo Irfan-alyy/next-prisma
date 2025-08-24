@@ -8,6 +8,7 @@ import { motion, Variants } from 'framer-motion';
 import UpdateModal from '@/components/UpdateModal';
 import DetailsModal from '@/components/DetailsModal';
 
+
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -35,13 +36,11 @@ interface Job {
 interface Application {
   id: string;
   userId: string;
-  name: string;
-  email: string;
-  coverLetter: string;
-  cvUrl?: string;
+  description: string;
+  resume: string;
   appliedAt: string;
   status: string;
-  user: { name: string; email: string };
+  applicant: { name: string; email: string };
 }
 
 const JobDetailPage: React.FC = () => {
@@ -49,6 +48,7 @@ const JobDetailPage: React.FC = () => {
   const params = useParams();
   const jobId = params.id as string;
   const router= useRouter()
+  
 
   const [job, setJob] = useState<Job | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -102,12 +102,12 @@ const JobDetailPage: React.FC = () => {
     }
   };
 
-  const handleAction = async (appId: string, newStatus: 'Accepted' | 'Rejected') => {
+  const handleAction = async (jobId:string,appId: string, newStatus: 'Accepted' | 'Rejected') => {
     try {
-      const res = await fetch(`/api/applications/${appId}`, {
+      const res = await fetch(`/api/job/${jobId}/applications`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({appId:appId, status: newStatus }),
       });
       if (res.ok) {
         // Update local state
@@ -237,14 +237,14 @@ const JobDetailPage: React.FC = () => {
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-800">{app.name}</h3>
+                          <h3 className="text-lg font-semibold text-gray-800">{app.applicant.name}</h3>
                           <p className="text-gray-600 flex items-center">
                             <Mail className="h-5 w-5 mr-2" />
-                            {app.email}
+                            {app.applicant.email}
                           </p>
                           <p className="text-gray-500 text-sm flex items-center">
                             <User className="h-5 w-5 mr-2" />
-                            {app.user.name}
+                            {app.applicant.name}
                           </p>
                           <p className="text-gray-500 text-sm">Applied: {new Date(app.appliedAt).toLocaleDateString()}</p>
                           <p className="text-gray-500 text-sm">Status: {app.status}</p>
@@ -256,19 +256,19 @@ const JobDetailPage: React.FC = () => {
                           >
                             <Eye className="h-5 w-5" />
                           </button>
-                          {app.cvUrl && (
-                            <a href={app.cvUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800">
+                          {app.resume && (
+                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800">
                               <FileText className="h-5 w-5" />
                             </a>
                           )}
                           <button
-                            onClick={() => handleAction(app.id, 'Accepted')}
+                            onClick={() => handleAction(jobId,app.id, 'Accepted')}
                             className="text-green-600 hover:text-green-800"
                           >
                             <Check className="h-5 w-5" />
                           </button>
                           <button
-                            onClick={() => handleAction(app.id, 'Rejected')}
+                            onClick={() => handleAction(jobId,app.id, 'Rejected')}
                             className="text-red-600 hover:text-red-800"
                           >
                             <X className="h-5 w-5" />
