@@ -85,11 +85,11 @@ const JobDetailPage: React.FC = () => {
       }
     };
     fetchJobAndApplications();
-  }, [jobId, session]);
+  }, [jobId,session]);
 
   const handleUpdateJob = async (updatedJob: Job) => {
     try {
-      const res = await fetch(`/api/jobs/${jobId}`, {
+      const res = await fetch(`/api/job/${jobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedJob),
