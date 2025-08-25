@@ -286,7 +286,15 @@ const handleJobModalClose=()=>{
 
               {activeTab === 'jobs' && (
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Job Listings</h2>
+                  <div className='flex justify-between items-center w-full'>
+                  <h2 className="text-3xl font-bold text-gray-800 text-center">Your Job Listings</h2>
+                  <Link
+                    href="/post-job"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
+                  >
+                    Post New Job
+                  </Link>
+                  </div>
                   {jobs?.length === 0 ? (
                     <p className="text-gray-600 text-center">You haven’t posted any jobs yet.</p>
                   ) : (
@@ -314,12 +322,6 @@ const handleJobModalClose=()=>{
                       ))}
                     </div>
                   )}
-                  <Link
-                    href="/post-job"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
-                  >
-                    Post New Job
-                  </Link>
                 </div>
               )}
 

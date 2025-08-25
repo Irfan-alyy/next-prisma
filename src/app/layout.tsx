@@ -18,7 +18,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
       </Head>
       <body>
-        <SessionProvider>
+        <SessionProvider
+        refetchInterval={0} // don't poll session in background
+        refetchOnWindowFocus={false} // don't refetch on tab switch
+        >
         <Navbar /> {/* Your Navbar component */}
         <main>{children}</main> {/* Your page content */}
         <Footer/>
