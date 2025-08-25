@@ -2,33 +2,14 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { X, Briefcase, MapPin, DollarSign, FileText, Calendar, User } from 'lucide-react';
-
-interface JobDetails {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contract: string;
-  description: string;
-  postedAt: string;
-}
-interface ApplicationDetails {
-  id: string;
-  description: string;
-  coverLetter: string;
-  resume?: string;
-  appliedAt: string;
-  status: string;
-  job: JobDetails
-}
+import { X, Briefcase, MapPin, DollarSign, FileText, Calendar, User, UserSquare } from 'lucide-react';
+import { Job, Application } from '@/lib/types';
 
 interface DetailsModalProps {
   isOpen: Boolean;
   onClose: () => void;
   type: 'job' | 'application';
-  data: JobDetails | ApplicationDetails;
+  data: Job | Application;
 }
 
 
@@ -63,76 +44,90 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, type, data
             <div className="flex items-center">
               <Briefcase className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Title:</span> {(data as JobDetails).title}
+                <span className="font-semibold">Title:</span> {(data as Job).title}
               </p>
             </div>
             <div className="flex items-center">
               <Briefcase className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Company:</span> {(data as JobDetails).company}
+                <span className="font-semibold">Company:</span> {(data as Job).company}
               </p>
             </div>
             <div className="flex items-center">
               <MapPin className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Location:</span> {(data as JobDetails).location}
+                <span className="font-semibold">Location:</span> {(data as Job).location}
               </p>
             </div>
             <div className="flex items-center">
               <DollarSign className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Salary:</span> {(data as JobDetails).salary}
+                <span className="font-semibold">Salary:</span> {(data as Job).salary}
               </p>
             </div>
             <div className="flex items-center">
               <FileText className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Contract:</span> {(data as JobDetails).contract}
+                <span className="font-semibold">Contract:</span> {(data as Job).contract}
               </p>
             </div>
             <div className="flex items-start">
               <FileText className="h-5 w-5 text-indigo-600 mr-3 mt-1" />
               <p className="text-gray-700">
-                <span className="font-semibold">Description:</span> {(data as JobDetails).description}
+                <span className="font-semibold">Description:</span> {(data as Job).description}
               </p>
             </div>
             <div className="flex items-center">
               <Calendar className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Posted:</span>{' '}
-                {new Date((data as JobDetails).postedAt).toLocaleDateString()}
+                {new Date((data as Job).postedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="flex items-center">
+              <UserSquare className="h-5 w-5 text-indigo-600 mr-3" />
+              <p className="text-gray-700">
+                <span className="font-semibold">Applicant Name:</span>{' '}
+                {(data as Application).applicant.name}
+              </p>
+            </div>
+            <div className="flex items-center">
+              <Briefcase className="h-5 w-5 text-indigo-600 mr-3" />
+              <p className="text-gray-700">
+                <span className="font-semibold">Email:</span>{' '}
+                {(data as Application).applicant.email}
+              </p>
+            </div>
+            <div className="flex items-center">
               <Briefcase className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Job Title:</span>{' '}
-                {(data as ApplicationDetails).job.title}
+                {(data as Application).job.title}
               </p>
             </div>
             <div className="flex items-center">
               <Briefcase className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Company:</span>{' '}
-                {(data as ApplicationDetails).job.company}
+                {(data as Application).job.company}
               </p>
             </div>
             <div className="flex items-start ml-8 ">
               <p className="text-gray-700">
                 <span className="font-semibold">Cover Letter:</span>{' '}
-                {(data as ApplicationDetails).description}
+                {(data as Application).description}
               </p>
             </div>
-            {(data as ApplicationDetails).resume && (
+            {(data as Application).resume && (
               <div className="flex items-center">
                 <FileText className="h-5 w-5 text-indigo-600 mr-3" />
                 <p className="text-gray-700">
                   <span className="font-semibold">CV:</span>{' '}
                   <a
-                    href={(data as ApplicationDetails).resume}
+                    href={(data as Application).resume}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-600 hover:underline"
@@ -146,13 +141,13 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, type, data
               <Calendar className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Applied:</span>{' '}
-                {new Date((data as ApplicationDetails).appliedAt).toLocaleDateString()}
+                {new Date((data as Application).appliedAt).toLocaleDateString()}
               </p>
             </div>
             <div className="flex items-center">
               <FileText className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
-                <span className="font-semibold">Status:</span> {(data as ApplicationDetails).status}
+                <span className="font-semibold">Status:</span> {(data as Application).status}
               </p>
             </div>
           </div>

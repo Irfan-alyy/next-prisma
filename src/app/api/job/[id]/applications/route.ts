@@ -28,6 +28,12 @@ export async function GET(
             email: true
           },
         },
+        job:{
+          select:{
+            title:true,
+            company:true
+          }
+        }
       },
     });
     if (!applications) {

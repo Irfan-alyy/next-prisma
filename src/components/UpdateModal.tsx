@@ -4,29 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion, Variants } from 'framer-motion';
 import { X, Briefcase, MapPin, DollarSign, FileText, Upload } from 'lucide-react';
-
-interface JobData {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contract: string;
-  description: string;
-}
-
-interface ApplicationData {
-  id: string;
-  coverLetter: string;
-  status?: string; // Only for employers updating application status
-}
+import { Job, Application } from '@/lib/types';
 
 interface UpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   type: 'job' | 'application';
-  data: JobData | ApplicationData;
-  onSubmit: (data: JobData | ApplicationData) => void;
+  data: Job | Application;
+  onSubmit: (data: Job | Application) => void;
 }
 
 const modalVariants: Variants = {
@@ -37,7 +22,7 @@ const modalVariants: Variants = {
 const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, onSubmit }) => {
   const { data: session } = useSession();
   const isEmployer = 'employer'; // Assume user model has a role field
-  const [formData, setFormData] = useState<JobData | ApplicationData>(data);
+  const [formData, setFormData] = useState<Job | Application>(data);
   const [cvFile, setCvFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -62,7 +47,8 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
     Object.entries(formData).forEach(([key, value]) => {
       submissionData.append(key, value);
     });
-    if (cvFile) submissionData.append('cv', cvFile);
+    if (cvFile) submissionData.append('resume', cvFile);
+    console.log(formData);
     onSubmit(formData);
     onClose();
   };
@@ -100,7 +86,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     id="title"
                     name="title"
                     type="text"
-                    value={(formData as JobData).title}
+                    value={(formData as Job).title}
                     onChange={handleInputChange}
                     required
                     className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -117,7 +103,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     id="company"
                     name="company"
                     type="text"
-                    value={(formData as JobData).company}
+                    value={(formData as Job).company}
                     onChange={handleInputChange}
                     required
                     className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -134,7 +120,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     id="location"
                     name="location"
                     type="text"
-                    value={(formData as JobData).location}
+                    value={(formData as Job).location}
                     onChange={handleInputChange}
                     required
                     className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -151,7 +137,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     id="salary"
                     name="salary"
                     type="text"
-                    value={(formData as JobData).salary}
+                    value={(formData as Job).salary}
                     onChange={handleInputChange}
                     required
                     className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -168,7 +154,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     id="contract"
                     name="contract"
                     type="text"
-                    value={(formData as JobData).contract}
+                    value={(formData as Job).contract}
                     onChange={handleInputChange}
                     required
                     className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -184,7 +170,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                   <textarea
                     id="description"
                     name="description"
-                    value={(formData as JobData).description}
+                    value={(formData as Job).description}
                     onChange={handleInputChange}
                     required
                     rows={4}
@@ -204,7 +190,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                   <textarea
                     id="coverLetter"
                     name="coverLetter"
-                    value={(formData as ApplicationData).coverLetter}
+                    value={(formData as Application).description}
                     onChange={handleInputChange}
                     required
                     rows={4}
@@ -220,7 +206,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                   <Upload className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
                   <input
                     id="cv"
-                    name="cv"
+                    name="resume"
                     type="file"
                     accept=".pdf,.doc,.docx"
                     onChange={handleFileChange}
@@ -238,7 +224,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
                     <select
                       id="status"
                       name="status"
-                      value={(formData as ApplicationData).status || 'Pending'}
+                      value={(formData as Application).status || 'Pending'}
                       onChange={handleInputChange}
                       className="pl-10 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     >

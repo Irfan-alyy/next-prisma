@@ -7,8 +7,7 @@ import { Briefcase, MapPin, DollarSign, Calendar, FileText, Edit, Check, X, User
 import { motion, Variants } from 'framer-motion';
 import UpdateModal from '@/components/UpdateModal';
 import DetailsModal from '@/components/DetailsModal';
-
-
+import { Job , Application} from '@/lib/types';
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -20,28 +19,6 @@ const buttonVariants: Variants = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut', type: 'spring', stiffness: 120 } },
   hover: { scale: 1.05, transition: { duration: 0.2 } },
 };
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  contract: string;
-  description: string;
-  postedAt: string;
-  postedById: string;
-}
-
-interface Application {
-  id: string;
-  userId: string;
-  description: string;
-  resume: string;
-  appliedAt: string;
-  status: string;
-  applicant: { name: string; email: string };
-}
 
 const JobDetailPage: React.FC = () => {
   const { data: session, status } = useSession();
@@ -87,7 +64,7 @@ const JobDetailPage: React.FC = () => {
     fetchJobAndApplications();
   }, [jobId,session]);
 
-  const handleUpdateJob = async (updatedJob: Job) => {
+  const handleUpdateJob = async (updatedJob: Partial<Job>) => {
     try {
       const res = await fetch(`/api/job/${jobId}`, {
         method: 'PUT',
@@ -95,7 +72,9 @@ const JobDetailPage: React.FC = () => {
         body: JSON.stringify(updatedJob),
       });
       if (res.ok) {
-        setJob(await res.json());
+        const data=await res.json()
+        console.log(data);
+        setJob(data);
       }
     } catch (error) {
       console.error('Error updating job:', error);
@@ -124,7 +103,6 @@ const JobDetailPage: React.FC = () => {
   const handleViewApplication = (app: Application) => {
     setDetailsModal({ isOpen: true, data: app });
   };
-
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 font-inter">
@@ -296,7 +274,7 @@ const JobDetailPage: React.FC = () => {
         isOpen={detailsModal.isOpen}
         onClose={() => setDetailsModal({ isOpen: false, data: null })}
         type="application"
-        data={detailsModal.data}
+        data={(detailsModal.data) as Application | Job}
       />
     </div>
   );
