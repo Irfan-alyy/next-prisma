@@ -354,10 +354,7 @@ const DashboardPage: React.FC = () => {
                               <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
                             </Link>
                             <div className="flex space-x-2">
-                              <button className="text-indigo-600 hover:text-indigo-800" >
-                                <Edit className="h-5 w-5" />
-                              </button>
-                              <button className="text-red-600 hover:text-red-800" onClick={() => handleJobDelete(job.id)}>
+                              <button title='delete' className="text-red-600 hover:text-red-800" onClick={() => handleJobDelete(job.id)}>
                                 <Trash2 className="h-5 w-5" />
                               </button>
                             </div>

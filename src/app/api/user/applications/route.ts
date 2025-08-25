@@ -10,7 +10,24 @@ export async function GET(req: NextRequest) {
   }
   try {
     const applications = await prisma.application.findMany({
-      where: { userId: session.user.id }, include:{job:true}
+      where: { userId: session.user.id }, select:{
+        id:true,
+        appliedAt:true,
+        description:true,
+        resume:true,
+        status:true,
+        job:{
+          select:{  
+            company:true,id:true, title:true
+          }
+        },
+        applicant:{
+          select:{
+            name:true,
+            email:true
+          }
+        }
+      }
     });
     return NextResponse.json({ applications }, { status: 200 });
   } catch (error:any) {

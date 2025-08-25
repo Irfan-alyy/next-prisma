@@ -91,7 +91,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, type, data
               <UserSquare className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Applicant Name:</span>{' '}
-                {(data as Application).applicant.name}
+                {(data as Application).applicant?.name}
               </p>
             </div>
             <div className="flex items-center">
