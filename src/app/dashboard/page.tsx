@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { User, Briefcase, FileText, Edit, Trash2, LogIn } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import {ToastContainer,toast} from "react-toastify"
+import { ToastContainer, toast } from "react-toastify"
 import DetailsModal from '@/components/DetailsModal';
 
 interface User {
@@ -80,17 +80,16 @@ const DashboardPage: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<Array<Job>>([]);
   const [applications, setApplications] = useState<Array<Application>>([]);
-  const [isDetailModalOpen,setIsDetailModalOpen]=useState<Boolean>(false)
-  const [currentDetail,setCurrentDetail]=useState<Job |Application >()
-  const [currentDetailType,setCurrentDetailType]=useState<'job' | 'application' >('job')
-
-
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<Boolean>(false)
+  const [currentDetail, setCurrentDetail] = useState< Job | Application>()
+  const [currentDetailType, setCurrentDetailType] = useState<'job' | 'application'>('job')
+  const [loading, setLoading] = useState<Boolean>(false)
   useEffect(() => {
+
     try {
-      fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user));
-      fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs));
-      fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications));
-    } catch (error:any) {
+      setLoading(true)
+      fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user)).finally(() => setLoading(false));
+    } catch (error: any) {
       console.log("Error occured in fetching user data", error?.message);
     }
   }, []);
@@ -98,36 +97,61 @@ const DashboardPage: React.FC = () => {
 
 
 
-  const handleJobDelete=async(id:String)=>{
-    const response= await fetch(`/api/job/${id}`, {method:"DELETE"})
-    if(response.ok){
+
+  const handleJobDelete = async (id: String) => {
+    const response = await fetch(`/api/job/${id}`, { method: "DELETE" })
+    if (response.ok) {
       toast.warning("Job Deleted Successfully");
-      const remainingJobs=jobs.filter(job=>job.id!==id)
+      const remainingJobs = jobs.filter(job => job.id !== id)
       setJobs(remainingJobs)
-      return 
+      return
     }
-    const data= await response.json();
+    const data = await response.json();
     toast.error(data?.message || "Failed to delete Job")
   }
 
-  
-const handleJobModalClose=()=>{
-  setIsDetailModalOpen(false)
-}
 
-  const handleApplicationModal=(application:Application)=>{
+  const handleJobModalClose = () => {
+    setIsDetailModalOpen(false)
+  }
+
+  const handleApplicationModal = (application: Application) => {
     setCurrentDetail(application)
     setCurrentDetailType("application")
     setIsDetailModalOpen(true)
   }
 
-  const handleJobModal=(job:Job)=>{
+  const handleJobModal = (job: Job) => {
     setCurrentDetail(job)
     setCurrentDetailType("job")
     setIsDetailModalOpen(true)
 
   }
 
+  const fetchApplications = () => {
+    setLoading(true)
+    fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications)).finally(() => setLoading(false));
+  }
+  const fetchJobs = () => {
+    setLoading(true)
+    fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs)).finally(() => setLoading(false));
+
+  }
+  const handleTabChange = (tab: string) => {
+    switch (tab) {
+      case "job":
+         jobs && jobs.length>0 || fetchJobs()
+        setActiveTab("jobs")
+        break;
+      case "application":
+        applications && applications.length>0 || fetchApplications();
+        setActiveTab("applications")
+        break;
+      default:
+        setActiveTab("profile")
+        break;
+    }
+  }
 
 
   if (status === 'loading') {
@@ -219,28 +243,28 @@ const handleJobModalClose=()=>{
             {/* Tabs */}
             <div className="flex justify-center space-x-4 mb-8">
               <button
-                onClick={() => setActiveTab('profile')}
+                onClick={() => handleTabChange("profile")}
                 className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'profile'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
               >
                 Profile
               </button>
               <button
-                onClick={() => setActiveTab('jobs')}
+                onClick={() => handleTabChange("job")}
                 className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'jobs'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
               >
                 My Jobs
               </button>
               <button
-                onClick={() => setActiveTab('applications')}
+                onClick={() => handleTabChange("application")}
                 className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'applications'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
               >
                 My Applications
@@ -256,105 +280,132 @@ const handleJobModalClose=()=>{
               {activeTab === 'profile' && (
                 <div className="space-y-6">
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Profile</h2>
-                  <div className="flex items-center justify-center mb-6">
-                    <img
-                      src={user?.image as string}
-                      alt="User Avatar"
-                      className="w-24 h-24 rounded-full shadow-md"
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                      <User className="h-6 w-6 text-indigo-600 mr-4" />
-                      <p className="text-gray-700"><span className="font-semibold">Name:</span> {user?.name}</p>
+                  {loading ? <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className=" text-lg font-semibold text-black text-center"
+                  >
+                    Loading...
+                  </motion.div> :
+                    <div>
+                      <div className="flex items-center justify-center mb-6">
+                        <img
+                          src={user?.image as string}
+                          alt="User Avatar"
+                          className="w-24 h-24 rounded-full shadow-md"
+                        />
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center">
+                          <User className="h-6 w-6 text-indigo-600 mr-4" />
+                          <p className="text-gray-700"><span className="font-semibold">Name:</span> {user?.name}</p>
+                        </div>
+                        <div className="flex items-center">
+                          <FileText className="h-6 w-6 text-indigo-600 mr-4" />
+                          <p className="text-gray-700"><span className="font-semibold">Email:</span> {user?.email}</p>
+                        </div>
+                        <motion.button
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
+                        >
+                          <Edit className="h-5 w-5 mr-2" />
+                          Edit Profile
+                        </motion.button>
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      <FileText className="h-6 w-6 text-indigo-600 mr-4" />
-                      <p className="text-gray-700"><span className="font-semibold">Email:</span> {user?.email}</p>
-                    </div>
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
-                    >
-                      <Edit className="h-5 w-5 mr-2" />
-                      Edit Profile
-                    </motion.button>
-                  </div>
+                  }
                 </div>
               )}
 
               {activeTab === 'jobs' && (
                 <div className="space-y-6">
                   <div className='flex justify-between items-center w-full'>
-                  <h2 className="text-3xl font-bold text-gray-800 text-center">Your Job Listings</h2>
-                  <Link
-                    href="/post-job"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
-                  >
-                    Post New Job
-                  </Link>
+                    <h2 className="text-3xl font-bold text-gray-800 text-center">Your Job Listings</h2>
+                    <Link
+                      href="/post-job"
+                      className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
+                    >
+                      Post New Job
+                    </Link>
                   </div>
-                  {jobs?.length === 0 ? (
-                    <p className="text-gray-600 text-center">You haven’t posted any jobs yet.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {jobs.map((job) => (
-                        <motion.div
-                          key={job.id as string}
-                          variants={itemVariants}
-                          className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
-                        >
-                          <Link href={`/dashboard/job/${job.id}`} className='cursor-pointer' >
-                            <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
-                            <p className="text-gray-600">{job.company} - {job.location}</p>
-                            <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
-                          </Link>
-                          <div className="flex space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-800" >
-                              <Edit className="h-5 w-5" />
-                            </button>
-                            <button className="text-red-600 hover:text-red-800" onClick={()=>handleJobDelete(job.id)}>
-                              <Trash2 className="h-5 w-5" />
-                            </button>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
+                  {loading ? <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-lg font-semibold text-black text-center"
+                  >
+                    Loading...
+                  </motion.div> :
+                    jobs?.length === 0 ? (
+                      <p className="text-gray-600 text-center">You haven’t posted any jobs yet.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {jobs.map((job) => (
+                          <motion.div
+                            key={job.id as string}
+                            variants={itemVariants}
+                            className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
+                          >
+                            <Link href={`/dashboard/job/${job.id}`} className='cursor-pointer' >
+                              <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
+                              <p className="text-gray-600">{job.company} - {job.location}</p>
+                              <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
+                            </Link>
+                            <div className="flex space-x-2">
+                              <button className="text-indigo-600 hover:text-indigo-800" >
+                                <Edit className="h-5 w-5" />
+                              </button>
+                              <button className="text-red-600 hover:text-red-800" onClick={() => handleJobDelete(job.id)}>
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
                 </div>
               )}
 
               {activeTab === 'applications' && (
                 <div className="space-y-6">
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Applications</h2>
-                  {applications?.length === 0 ? (
-                    <p className="text-gray-600 text-center">You haven’t applied to any jobs yet.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {applications.map((app) => (
-                        <motion.div
-                          key={app.id as string}
-                          variants={itemVariants}
-                          onClick={()=>handleApplicationModal(app)}
-                          className="border border-gray-200 rounded-md p-4 cursor-pointer"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">{app.job?.title}</h3>
-                          <p className="text-gray-600">{app?.job?.company}</p>
-                          <p className="text-gray-500 text-sm">Applied At: {(new Date(app?.appliedAt))?.toLocaleString()}</p>
-                          <p className="text-gray-500 text-sm">Status: {app?.status}</p>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
+                  {loading ? <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-black text-lg font-semibold text-center"
+                  >
+                    Loading...
+                  </motion.div> :
+                    applications?.length === 0 ? (
+                      <p className="text-gray-600 text-center">You haven’t applied to any jobs yet.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {applications.map((app) => (
+                          <motion.div
+                            key={app.id as string}
+                            variants={itemVariants}
+                            onClick={() => handleApplicationModal(app)}
+                            className="border border-gray-200 rounded-md p-4 cursor-pointer"
+                          >
+                            <h3 className="text-lg font-semibold text-gray-800">{app.job?.title}</h3>
+                            <p className="text-gray-600">{app?.job?.company}</p>
+                            <p className="text-gray-500 text-sm">Applied At: {(new Date(app?.appliedAt))?.toLocaleString()}</p>
+                            <p className="text-gray-500 text-sm">Status: {app?.status}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
                 </div>
               )}
             </motion.div>
           </div>
         </section>
       </main>
-      {isDetailModalOpen && <DetailsModal isOpen={isDetailModalOpen} onClose={handleJobModalClose} type={currentDetailType} data={currentDetail} />}
-      <ToastContainer/>
+      {isDetailModalOpen && <DetailsModal isOpen={isDetailModalOpen} onClose={handleJobModalClose} type={currentDetailType} data={currentDetail as Job | Application} />}
+      <ToastContainer />
     </div>
   );
 };

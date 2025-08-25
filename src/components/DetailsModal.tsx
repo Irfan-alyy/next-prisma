@@ -9,7 +9,7 @@ interface DetailsModalProps {
   isOpen: Boolean;
   onClose: () => void;
   type: 'job' | 'application';
-  data: Job | Application;
+  data: Partial<Job> | Partial<Application>;
 }
 
 
