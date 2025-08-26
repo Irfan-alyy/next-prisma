@@ -16,7 +16,6 @@ model User {
   image         String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  type          String?
   accounts      Account[]
   applications  Application[]
   Authenticator Authenticator[]

@@ -18,7 +18,6 @@ const ProfilePage: React.FC = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type }),
     });
-    update();
     router.push("/dashboard") // Update session
   };
 
