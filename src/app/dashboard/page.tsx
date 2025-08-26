@@ -305,14 +305,13 @@ const DashboardPage: React.FC = () => {
                           <FileText className="h-6 w-6 text-indigo-600 mr-4" />
                           <p className="text-gray-700"><span className="font-semibold">Email:</span> {user?.email}</p>
                         </div>
-                        <motion.button
-                          variants={buttonVariants}
-                          whileHover="hover"
+                        <Link
+                          href={"/dashboard/profile"}
                           className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
                         >
                           <Edit className="h-5 w-5 mr-2" />
                           Edit Profile
-                        </motion.button>
+                        </Link>
                       </div>
                     </div>
                   }
