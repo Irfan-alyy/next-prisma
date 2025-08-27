@@ -6,6 +6,7 @@ import { Briefcase, MapPin, DollarSign, FileText, Send, LogIn } from 'lucide-rea
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion for animations
 import { useSession } from 'next-auth/react';
 import { ToastContainer, toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 // Animation variants for form card
 const cardVariants:Variants = {
@@ -40,7 +41,7 @@ const PostJobPage: React.FC = () => {
     description: '',
   });
 
-
+const router= useRouter()
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -83,7 +84,6 @@ const PostJobPage: React.FC = () => {
         </div>
       );
     }
-  
     // Show login prompt if user is not authenticated
     if (!session?.user) {
       return (
@@ -128,6 +128,66 @@ const PostJobPage: React.FC = () => {
               </Link>
             </motion.div>
           </motion.div>
+        </div>
+      );
+    }
+
+    if(session?.user?.type!=="employer"){
+      return (
+        <div className="max-h-screen bg-gray-50 pt-6 pb-6">
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
+          <div className="text-center">
+            {/* Lock Icon */}
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            
+            {/* Title */}
+            <h2 className="mt-4 text-xl font-bold text-gray-900">Access Restricted</h2>
+            
+            {/* Message */}
+            <p className="mt-2 text-gray-600">
+              You need to be registered as an <span className="font-semibold text-indigo-600">Employer</span> to post jobs.
+            </p>
+            
+            {/* Current Role Info */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                Current role: <span className="font-medium capitalize text-gray-900">{session?.user?.type || 'Not set'}</span>
+              </p>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => router.push('/dashboard/profile')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+              >
+                <svg className="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Update Profile
+              </button>
+              
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+              >
+                <svg className="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Go to Dashboard
+              </button>
+            </div>
+            
+            {/* Additional Info */}
+            <div className="mt-6 text-xs text-gray-500">
+              <p>Don't have an employer account? Update your profile to switch roles.</p>
+            </div>
+          </div>
+        </div>
         </div>
       );
     }
