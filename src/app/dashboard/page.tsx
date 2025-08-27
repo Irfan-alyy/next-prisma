@@ -293,7 +293,7 @@ const DashboardPage: React.FC = () => {
                         <img
                           src={user?.image as string}
                           alt="User Avatar"
-                          className="w-24 h-24 rounded-full shadow-md"
+                          className="object-cover w-24 h-24 rounded-full shadow-md"
                         />
                       </div>
                       <div className="space-y-4">

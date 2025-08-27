@@ -65,8 +65,6 @@ const ProfilePage: React.FC = () => {
         method: 'PUT',
         body: formData,
       });
-
-      setIsUploading(false)
       if (response.ok) {
         const updatedUser = await response.json();
         await update({
@@ -77,13 +75,13 @@ const ProfilePage: React.FC = () => {
             image: updatedUser.image
           }
         });
+        setIsUploading(false)
         router.push("/dashboard");
         return
       }
     } catch (error) {
       console.error(error)
     }
-
   };
   return (
     <div className="min-h-screen bg-gray-50 font-inter">

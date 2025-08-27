@@ -39,8 +39,7 @@ const Navbar: React.FC = () => {
             <Link href="/jobs" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Find Jobs
             </Link>
-
-            {session.status==="authenticated" &&<Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+            {session.status==="authenticated" && session.data?.user?.type=="employer" &&<Link href="/post-job" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Post a Job
             </Link>}
             <Link href="/about" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
