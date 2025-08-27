@@ -9,17 +9,28 @@ import { useRouter } from 'next/navigation';
 
 const ProfilePage: React.FC = () => {
   const { data: session, update } = useSession();
-  const [role, setRole] = useState(session?.user?.type);
+  const [role, setRole] = useState("candidate");
   const router= useRouter()
   const handleUpdate = async () => {
     const type=role
-    await fetch('/api/user', {
+    const response=await fetch('/api/user', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type }),
     });
-    update();
-    router.push("/dashboard") // Update session
+    if (response.ok) {
+      const updatedUser = await response.json();
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          type: updatedUser.type,
+        }
+      });
+      router.push("/dashboard");
+      return
+    }
+    console.error(response)
   };
 
   return (

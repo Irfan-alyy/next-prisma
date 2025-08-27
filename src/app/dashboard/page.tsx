@@ -203,7 +203,7 @@ const DashboardPage: React.FC = () => {
           </motion.p>
           <motion.div variants={buttonVariants} whileHover="hover">
             <Link
-              href="/auth/login"
+              href="/auth/signin"
               className="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 shadow-lg transition duration-300 transform"
             >
               <LogIn className="h-6 w-6 mr-3" />

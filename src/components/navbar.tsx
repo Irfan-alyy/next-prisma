@@ -49,14 +49,14 @@ const Navbar: React.FC = () => {
             <Link href="/contact" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
               Contact
             </Link>
-            {session.data?.user && 
+            {session.status==="authenticated" &&
             <button onClick={()=>setIsDropdownOpen(!isDropdownOpen)} className='text-gray-700 hover:text-indigo-600 '>
             <UserCircle className='h-6 w-6' />
             </button>}
             
 
 
-            {session.status!=="authenticated" && <Link href="/auth/signin" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+            {session.status!=="authenticated" && session.status!=="loading"  && <Link href="/auth/signin" className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
               Sign In
             </Link>}
 
