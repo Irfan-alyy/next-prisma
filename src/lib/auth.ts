@@ -42,6 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     id: dbUser.id,
                     type: dbUser.type,
                     name:dbUser.name,
+                    image:dbUser.image
                   };
                 }
             }
