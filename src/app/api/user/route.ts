@@ -24,13 +24,14 @@ export async function PUT(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { type } = await request.json();
+  const { type,name }:{type:string,name:string} = await request.json();
   if (!['candidate', 'employer'].includes(type)) {
     return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
   }
+  console.log(name);
   const user = await prisma.user.update({
     where: { id: session.user.id },
-    data: { type },
+    data: name? { type, name: name.trim() || undefined }:{type},
   });
   return NextResponse.json(user);
 }
