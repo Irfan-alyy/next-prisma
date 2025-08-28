@@ -14,11 +14,6 @@ const cardVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-const buttonVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut', type: 'spring', stiffness: 120 } },
-  hover: { scale: 1.05, transition: { duration: 0.2 } },
-};
 
 const JobDetailPage: React.FC = () => {
   const { data: session, status } = useSession();

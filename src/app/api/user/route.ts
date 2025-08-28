@@ -51,7 +51,7 @@ export async function PUT(request: Request) {
       await unlink(imagePath);
       console.log("image unlinked");
       updateData.image = null
-    } catch (error) {
+    } catch (error:unknown) {
       console.warn('Failed to delete image file:', error);
     }
   }
@@ -84,7 +84,7 @@ const saveImage = async (file: File, userId: string) => {
   const uploadDir = join(process.cwd(), "public", "profile_pictures");
   try {
     await mkdir(uploadDir, { recursive: true })
-  } catch (error) {
+  } catch (error:unknown) {
     console.warn('Profile pictures directory already exists or failed to create:', error)
   }
   const bytes = await file.arrayBuffer();

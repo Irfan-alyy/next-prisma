@@ -20,7 +20,7 @@ const modalVariants: Variants = {
 };
 
 const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, onSubmit }) => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const isEmployer = 'employer'; // Assume user model has a role field
   const [formData, setFormData] = useState<Job | Application>(data);
   const [cvFile, setCvFile] = useState<File | null>(null);

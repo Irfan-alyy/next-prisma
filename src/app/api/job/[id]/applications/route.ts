@@ -43,11 +43,11 @@ export async function GET(
       );
     }
     return NextResponse.json(applications);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
       {
-        message: error.message
-          ? error.message
+        message: error?.message
+          ? error?.message
           : " Error occured fetching application",
       },
       { status: 500 }
@@ -78,7 +78,7 @@ export async function GET(
 //   }
 // }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

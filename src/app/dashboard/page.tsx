@@ -3,40 +3,40 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { User, Briefcase, FileText, Edit, Trash2, LogIn } from 'lucide-react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { User, FileText, Edit, Trash2, LogIn } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
 import { ToastContainer, toast } from "react-toastify"
 import DetailsModal from '@/components/DetailsModal';
 
 interface User {
   createdAt: Date,
-  email: String
+  email: string
   emailVerified: Date | null
-  id: String
-  image: String
-  name: String
+  id: string
+  image: string
+  name: string
   updatedAt: Date
 }
 
 interface Job {
-  id: String,
-  title: String,
-  description: String,
-  salary: String,
+  id: string,
+  title: string,
+  description: string,
+  salary: string,
   postedAt: Date
-  company: String,
-  location: String,
-  contract: String
-  postedById: String
+  company: string,
+  location: string,
+  contract: string
+  postedById: string
 }
 interface Application {
-  id: String,
-  description: String,
+  id: string,
+  description: string,
   appliedAt: Date,
   status: "PENDING" | "ACCEPTED" | "REJECTED",
-  jobId: String,
-  userId: String,
-  resume: String,
+  jobId: string,
+  userId: string,
+  resume: string,
   job: Job
 }
 
@@ -98,7 +98,7 @@ const DashboardPage: React.FC = () => {
 
 
 
-  const handleJobDelete = async (id: String) => {
+  const handleJobDelete = async (id: string) => {
     const response = await fetch(`/api/job/${id}`, { method: "DELETE" })
     if (response.ok) {
       toast.warning("Job Deleted Successfully");

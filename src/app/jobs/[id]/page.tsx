@@ -5,8 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Briefcase, MapPin, DollarSign, Calendar, FileText, Send, LogIn, Upload, Mail } from 'lucide-react'; // Icons for job details and form
-import { motion, AnimatePresence, Variants } from 'framer-motion'; // Assuming Footer is in src/components/Footer.tsx
-import { data } from 'framer-motion/client';
+import { motion,  Variants } from 'framer-motion'; // Assuming Footer is in src/components/Footer.tsx
 import { toast, ToastContainer } from 'react-toastify';
 
 
@@ -14,11 +13,6 @@ import { toast, ToastContainer } from 'react-toastify';
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' } },
-};
-
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
 const buttonVariants: Variants = {

@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
-import { Menu, X, UserCircle, LogOut, Briefcase, LayoutDashboard, LogOutIcon } from 'lucide-react';
+import {UserCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 
 const dropdownVariants: Variants = {
@@ -12,10 +12,10 @@ const dropdownVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
 };
 
-const mobileMenuVariants: Variants = {
-  hidden: { opacity: 0, height: 0 },
-  visible: { opacity: 1, height: 'auto', transition: { duration: 0.3, ease: 'easeOut' } },
-};
+// const mobileMenuVariants: Variants = {
+//   hidden: { opacity: 0, height: 0 },
+//   visible: { opacity: 1, height: 'auto', transition: { duration: 0.3, ease: 'easeOut' } },
+// };
 
 
 const Navbar: React.FC = () => {

@@ -1,8 +1,7 @@
 'use client'; // This directive is necessary for client-side interactivity in Next.js App Router
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { Mail, Lock, User, LogIn, UserPlus } from 'lucide-react'; // Importing icons from lucide-react
+import { Mail,LogIn } from 'lucide-react'; // Importing icons from lucide-react
 import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion
 import { signIn } from 'next-auth/react';
 import { Loader } from 'lucide-react';
@@ -50,32 +49,28 @@ const itemVariants:Variants = {
 };
 
 const AuthPage: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true); // true for login, false for signup
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
   const [loading,setLoading]=useState<{provider:string, loading:boolean}>({provider:"",loading:false})
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isLogin) {
-      // Handle login logic here
-      console.log('Login attempt:', { email, password });
-      // In a real app, you'd integrate with your backend auth system (e.g., NextAuth.js)
-      // Example: signIn('credentials', { email, password });
-    } else {
-      // Handle signup logic here
-      if (password !== confirmPassword) {
-        // In a real app, replace alert with a custom modal or toast notification
-        console.error('Passwords do not match!');
-        return;
-      }
-      console.log('Signup attempt:', { name, email, password });
-      // Example: signUp({ name, email, password });
-    }
-    // In a real app, you'd typically redirect or show a success/error message
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (isLogin) {
+  //     // Handle login logic here
+  //     console.log('Login attempt:', { email, password });
+  //     // In a real app, you'd integrate with your backend auth system (e.g., NextAuth.js)
+  //     // Example: signIn('credentials', { email, password });
+  //   } else {
+  //     // Handle signup logic here
+  //     if (password !== confirmPassword) {
+  //       // In a real app, replace alert with a custom modal or toast notification
+  //       console.error('Passwords do not match!');
+  //       return;
+  //     }
+  //     console.log('Signup attempt:', { name, email, password });
+  //     // Example: signUp({ name, email, password });
+  //   }
+  //   // In a real app, you'd typically redirect or show a success/error message
+  // };
 
   const handleGoogleSignIn = () => {
     setLoading({provider:"google",loading:true})
@@ -102,7 +97,6 @@ const AuthPage: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4 font-inter">
       <AnimatePresence mode="wait">
         <motion.div
-          key={isLogin ? "loginCard" : "signupCard"}
           variants={cardVariants}
           initial="hidden"
           animate="visible"
@@ -115,7 +109,7 @@ const AuthPage: React.FC = () => {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-3xl font-bold text-center text-gray-800 mb-8"
           >
-            {isLogin ? 'Welcome Back!' : 'Join JobBoard'}
+          
           </motion.h2>
 
           {/* Social Login Buttons */}

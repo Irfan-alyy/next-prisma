@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { X, Briefcase, MapPin, DollarSign, FileText, Calendar, User, UserSquare } from 'lucide-react';
+import { X, Briefcase, MapPin, DollarSign, FileText, Calendar,  UserSquare } from 'lucide-react';
 import { Job, Application } from '@/lib/types';
 
 interface DetailsModalProps {

@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         ;
         const result = await prisma.job.update({ where: { id }, data })
         return NextResponse.json({ message: "Job Updated successfully" })
-    } catch (error:any) {
+    } catch (error:unknown) {
         if (error?.code === "P2025") return NextResponse.json({ message: `No job found with ${id} id`, error }, { status: 404 })
         return NextResponse.json({ error }, { status: 500 })
     }

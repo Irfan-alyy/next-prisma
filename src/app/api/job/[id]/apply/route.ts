@@ -2,7 +2,6 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { unlink, writeFile } from "fs/promises";
-import { error } from "console";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         await writeFile(path.join(process.cwd(),fullPath ),buffer)
         fileWritten=true
         return NextResponse.json({message:"You have successfully applied for this Job"})
-    } catch (error:any) {
+    } catch (error:unknown) {
         if(createdApp){
             await prisma.application.delete({
             where: { id: createdApp.id }

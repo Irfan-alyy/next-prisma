@@ -10,10 +10,6 @@ export const metadata: Metadata = {
   description: 'Find Jobs That suits your skills and comfort',
 }
 // Animation variants for job cards
-const cardVariants: any = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
 
 const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string, page: string }> }) => {
   // Filter jobs based on search query (simplified for demo)
@@ -25,7 +21,6 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
   let totalJobs = 0;
 
   try {
-    const query = search as string
     let where = {}
     if (search) {
       where =
@@ -48,7 +43,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
     })
     totalJobs = await prisma.job.count({ where })
     // console.log(filteredJobs);
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.log("Error Occured during fetching jobs", error?.message)
   }
   const totalPages = Math.ceil(totalJobs / JobsPerPage)

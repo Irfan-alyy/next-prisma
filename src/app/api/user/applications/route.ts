@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth();
 //   console.log(session);
   if (!session?.user?.id) {
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       }
     });
     return NextResponse.json({ applications }, { status: 200 });
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.log(error.message? error.message : "Error occure during fetching applications");
     return NextResponse.json({ error }, { status: 500 });
   }

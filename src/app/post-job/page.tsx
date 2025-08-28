@@ -48,8 +48,7 @@ const router= useRouter()
     console.log('Job Posting Data:', formData);
     fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>
       res.json()
-    ).then(data=>{
-      // console.log(data);
+    ).then(_=>{
       setFormData({
         title: '',
         company: '',
