@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { da, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
+import { Job } from "@/lib/types";
 const prisma = new PrismaClient();
 
 
@@ -10,7 +11,7 @@ async function seedJobs() {
         return;
     }
     console.log(users);
-    const jobs:any = []
+    const jobs = []
     users.map(async user => {
         for (let i = 0; i < 25; i++) {
             const data = {

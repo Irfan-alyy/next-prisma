@@ -234,7 +234,7 @@ const DashboardPage: React.FC = () => {
               >
                 Profile
               </button>
-              <button
+             { session?.user?.type=="employer" && <button
                 onClick={() => handleTabChange("job")}
                 className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'jobs'
                   ? 'bg-indigo-600 text-white'
@@ -242,8 +242,8 @@ const DashboardPage: React.FC = () => {
                   }`}
               >
                 My Jobs
-              </button>
-              <button
+              </button>}
+             {session?.user?.type=="candidate" && <button
                 onClick={() => handleTabChange("application")}
                 className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'applications'
                   ? 'bg-indigo-600 text-white'
@@ -251,7 +251,7 @@ const DashboardPage: React.FC = () => {
                   }`}
               >
                 My Applications
-              </button>
+              </button>}
             </div>
 
             <motion.div
