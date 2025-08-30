@@ -1,13 +1,8 @@
 import Link from 'next/link';
 import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft, FilterIcon } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
-import prisma from '@/lib/prisma';
 import { Metadata } from 'next';
-import FilterModal from './filterModal';
-import { Job, User } from '@/lib/types';
+import { getJobs } from '@/lib/jobs';
 
-interface FilterJob{
-
-}
 
 export const metadata: Metadata = {
   title: 'Find Jobs',
@@ -18,51 +13,10 @@ export const metadata: Metadata = {
 const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string, page: string }> }) => {
   // Filter jobs based on search query (simplified for demo)
   const { search, page } = await searchParams;
-  let filteredJobs: Array<Job> = []
   const currentPage = parseInt(page) || 1;
   const JobsPerPage = 9;
-
-  let totalJobs = 0;  
-
-  try {
-    let where = {}
-    if (search) {
-      where =
-      {
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { company: { contains: search, mode: 'insensitive' } },
-          { contract: { contains: search, mode: 'insensitive' } },
-          { location: { contains: search, mode: 'insensitive' } },
-        ]
-      }
-    }
-    // console.log(where,"where");
-    filteredJobs = await prisma.job.findMany({
-      where,
-      orderBy: { postedAt: "desc" },
-      include: { postedBy: true },
-      skip: (currentPage - 1) * JobsPerPage,
-      take: JobsPerPage
-    })
-    totalJobs = await prisma.job.count({ where })
-    // console.log(filteredJobs);
-  } catch (error:unknown) {
-    console.log("Error Occured during fetching jobs", error?.message)
-  }
+  const {jobs, totalJobs}= await getJobs(search, currentPage,JobsPerPage)
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
-
-  const applyFilter=(query:string)=>{
-    "use server"
-    if(query){
-      const params= new URLSearchParams(query)
-      const location= params.get("location");
-      const salaryRange=params.get("salaryRange")
-      const jobType=params.get("jobType")
-      const salaryGt=params.get("salarGt")
-    }
-    
-  }
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <main>
@@ -92,10 +46,11 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                   placeholder="Search jobs by title, company, or location..."
                   className="w-full pl-10 pr-4 py-3 rounded-md shadow-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                 />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 px-3 flex items-center justify-between w-full pointer-events-none">
                   <button type='submit'>
                     <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </button>
+                  <FilterIcon className='right-10 text-black'/>
                 </div>
               </form>
             </div>
@@ -105,16 +60,12 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
         {/* Job Listings Section */}
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className='flex justify-between gap-10 items-center  mb-12'>
-              <div></div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center mb-12">
               Available Jobs
             </h2>
-            <FilterModal search={applyFilter}/>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredJobs.length > 0 ? (
-                filteredJobs.map((job) => (
+              {jobs?.length > 0 ? (
+                jobs.map((job) => (
                   <div
                     key={job.id}
                     className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-8 transform transition duration-300 hover:scale-105 hover:shadow-xl"
