@@ -273,9 +273,9 @@ const DashboardPage: React.FC = () => {
                   </motion.div> :
                     <div>
                       <div className="flex items-center justify-center mb-6">
-                        <Image
-                        width={96}
-                        height={96}
+                        <img
+                        // width={96}
+                        // height={96}
                           src={user?.image as string}
                           alt="User Avatar"
                           className="object-cover w-24 h-24 rounded-full shadow-md"

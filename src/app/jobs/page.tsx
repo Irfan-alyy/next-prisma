@@ -1,9 +1,13 @@
 import Link from 'next/link';
-import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
+import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft, FilterIcon } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import prisma from '@/lib/prisma';
 import { Metadata } from 'next';
+import FilterModal from './filterModal';
+import { Job, User } from '@/lib/types';
 
+interface FilterJob{
 
+}
 
 export const metadata: Metadata = {
   title: 'Find Jobs',
@@ -14,11 +18,11 @@ export const metadata: Metadata = {
 const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string, page: string }> }) => {
   // Filter jobs based on search query (simplified for demo)
   const { search, page } = await searchParams;
-  let filteredJobs: Array<unknown> = []
+  let filteredJobs: Array<Job> = []
   const currentPage = parseInt(page) || 1;
   const JobsPerPage = 9;
 
-  let totalJobs = 0;
+  let totalJobs = 0;  
 
   try {
     let where = {}
@@ -48,6 +52,17 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
   }
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
 
+  const applyFilter=(query:string)=>{
+    "use server"
+    if(query){
+      const params= new URLSearchParams(query)
+      const location= params.get("location");
+      const salaryRange=params.get("salaryRange")
+      const jobType=params.get("jobType")
+      const salaryGt=params.get("salarGt")
+    }
+    
+  }
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <main>
@@ -90,9 +105,13 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
         {/* Job Listings Section */}
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-12 text-center">
+            <div className='flex justify-between gap-10 items-center  mb-12'>
+              <div></div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 text-center">
               Available Jobs
             </h2>
+            <FilterModal search={applyFilter}/>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredJobs.length > 0 ? (
                 filteredJobs.map((job) => (
