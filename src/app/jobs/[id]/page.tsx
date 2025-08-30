@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Briefcase, MapPin, DollarSign, Calendar, FileText, Send, LogIn, Upload, Mail } from 'lucide-react'; // Icons for job details and form
 import { motion,  Variants } from 'framer-motion'; // Assuming Footer is in src/components/Footer.tsx
 import { toast, ToastContainer } from 'react-toastify';
+import { Job } from '@/lib/types';
 
 
 // Variants for animations
@@ -31,8 +32,8 @@ const JobDetailsPage: React.FC = () => {
   const params = useParams();
   const jobId = params?.id as string;
 
-  const [job, setJob] = useState<any>(null);
-  const [loading, setLoading] = useState<Boolean>(false)
+  const [job, setJob] = useState<Job>();
+  const [loading, setLoading] = useState<boolean>(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',

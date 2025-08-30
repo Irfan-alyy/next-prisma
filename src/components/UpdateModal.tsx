@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { motion, Variants } from 'framer-motion';
 import { X, Briefcase, MapPin, DollarSign, FileText, Upload } from 'lucide-react';
 import { Job, Application } from '@/lib/types';

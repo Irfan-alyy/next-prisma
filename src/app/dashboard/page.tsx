@@ -7,6 +7,7 @@ import { User, FileText, Edit, Trash2, LogIn } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { ToastContainer, toast } from "react-toastify"
 import DetailsModal from '@/components/DetailsModal';
+import Image from 'next/image';
 
 interface User {
   createdAt: Date,
@@ -41,17 +42,6 @@ interface Application {
 }
 
 
-
-
-// Mock data (replace with API calls)
-const mockUser = {
-  name: '',
-  email: '',
-  avatar: '',
-};
-
-
-
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -80,16 +70,16 @@ const DashboardPage: React.FC = () => {
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<Array<Job>>([]);
   const [applications, setApplications] = useState<Array<Application>>([]);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState<Boolean>(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false)
   const [currentDetail, setCurrentDetail] = useState< Job | Application>()
   const [currentDetailType, setCurrentDetailType] = useState<'job' | 'application'>('job')
-  const [loading, setLoading] = useState<Boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   useEffect(() => {
 
     try {
       setLoading(true)
       fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user)).finally(() => setLoading(false));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("Error occured in fetching user data", error?.message);
     }
   }, []);
@@ -121,13 +111,6 @@ const DashboardPage: React.FC = () => {
     setIsDetailModalOpen(true)
   }
 
-  const handleJobModal = (job: Job) => {
-    setCurrentDetail(job)
-    setCurrentDetailType("job")
-    setIsDetailModalOpen(true)
-
-  }
-
   const fetchApplications = () => {
     setLoading(true)
     fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications)).finally(() => setLoading(false));
@@ -140,11 +123,11 @@ const DashboardPage: React.FC = () => {
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
-         jobs && jobs.length>0 || fetchJobs()
+     !!(jobs && jobs.length>0) || fetchJobs()
         setActiveTab("jobs")
         break;
       case "application":
-        applications && applications.length>0 || fetchApplications();
+        !!(applications && applications.length>0) || fetchApplications();
         setActiveTab("applications")
         break;
       default:
@@ -290,7 +273,9 @@ const DashboardPage: React.FC = () => {
                   </motion.div> :
                     <div>
                       <div className="flex items-center justify-center mb-6">
-                        <img
+                        <Image
+                        width={96}
+                        height={96}
                           src={user?.image as string}
                           alt="User Avatar"
                           className="object-cover w-24 h-24 rounded-full shadow-md"

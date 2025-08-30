@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string, page: string }> }) => {
   // Filter jobs based on search query (simplified for demo)
   const { search, page } = await searchParams;
-  let filteredJobs: Array<any> = []
+  let filteredJobs: Array<unknown> = []
   const currentPage = parseInt(page) || 1;
   const JobsPerPage = 9;
 
@@ -237,7 +237,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
         <section className="bg-gradient-to-r from-purple-700 to-indigo-600 py-16 text-white rounded-t-lg shadow-xl">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-6">
-              Can't Find the Right Job?
+              Cannot Find the Right Job?
             </h2>
             <p className="text-lg sm:text-xl mb-10 opacity-90">
               Sign up to get personalized job recommendations and alerts.

@@ -6,7 +6,7 @@ import { X, Briefcase, MapPin, DollarSign, FileText, Calendar,  UserSquare } fro
 import { Job, Application } from '@/lib/types';
 
 interface DetailsModalProps {
-  isOpen: Boolean;
+  isOpen: boolean;
   onClose: () => void;
   type: 'job' | 'application';
   data: Partial<Job> | Partial<Application>;

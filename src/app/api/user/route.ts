@@ -1,11 +1,11 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { mkdir, unlink, writeFile } from "fs/promises";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid"
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await auth();
 
   //   console.log(session);
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       where: { id: session.user.id },
     });
     return NextResponse.json({ user }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error.message ? error.message : "Error occure during fetching user data");
     return NextResponse.json({ error }, { status: 500 });
   }

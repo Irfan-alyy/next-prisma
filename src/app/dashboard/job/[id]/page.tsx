@@ -57,7 +57,7 @@ const JobDetailPage: React.FC = () => {
       }
     };
     fetchJobAndApplications();
-  }, [jobId,session]);
+  }, [jobId,session,router]);
 
   const handleUpdateJob = async (updatedJob: Partial<Job>) => {
     try {

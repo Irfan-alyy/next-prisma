@@ -172,7 +172,7 @@ const Navbar: React.FC = () => {
                 <button
                   onClick={() => {
                     signOut({ callbackUrl: '/' });
-                    ()=>setIsOpen(false);
+                    setIsOpen(false);
                   }}
                   className="text-gray-700 hover:text-indigo-600 px-5 py-2  text-left"
                 >

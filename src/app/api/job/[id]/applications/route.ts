@@ -102,7 +102,7 @@ export async function PUT(request: Request) {
     });
 
     try {
-     const response= await sendEmail(
+     await sendEmail(
         application?.applicant.email,
         `Application Status Update for ${application.job.title}`,
         `Dear ${application?.applicant.name},\n\nYour application for ${application.job.title} at ${application.job.company} has been ${data.status.toLowerCase()}.\n\nThank you for applying!\n\nBest regards,\nJobBoard Team`

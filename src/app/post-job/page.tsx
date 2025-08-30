@@ -48,7 +48,7 @@ const router= useRouter()
     console.log('Job Posting Data:', formData);
     fetch("/api/job", {method:"POST", body:JSON.stringify({postedById:session?.user?.id,...formData})}).then(res=>
       res.json()
-    ).then(_=>{
+    ).then(()=>{
       setFormData({
         title: '',
         company: '',
@@ -183,7 +183,7 @@ const router= useRouter()
             
             {/* Additional Info */}
             <div className="mt-6 text-xs text-gray-500">
-              <p>Don't have an employer account? Update your profile to switch roles.</p>
+              <p>Dont have an employer account? Update your profile to switch roles.</p>
             </div>
           </div>
         </div>

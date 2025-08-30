@@ -17,11 +17,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     try {
-        const data = await prisma.job.delete({ where: { id } })
+        await prisma.job.delete({ where: { id } })
         return NextResponse.json({ message: "Job deleted successfully" },{status:200})
 
     }
-    catch (error:any) {
+    catch (error:unknown) {
         if (error?.code === "P2025") return NextResponse.json({ message: `No job found with id '${id}'`, error }, { status: 404 })
         return NextResponse.json({ error }, { status: 500 })
     }
@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const data = await req.json()
     try {
         ;
-        const result = await prisma.job.update({ where: { id }, data })
+        await prisma.job.update({ where: { id }, data })
         return NextResponse.json({ message: "Job Updated successfully" })
     } catch (error:unknown) {
         if (error?.code === "P2025") return NextResponse.json({ message: `No job found with ${id} id`, error }, { status: 404 })

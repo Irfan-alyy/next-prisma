@@ -4,7 +4,7 @@
 import { useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { Type, User, UserCog } from 'lucide-react';
+import { User, UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -12,7 +12,6 @@ const ProfilePage: React.FC = () => {
   const { data: session, update } = useSession();
   const [role, setRole] = useState<string>("candidate");
   const [name, setName] = useState<string>(session?.user?.name || "")
-  const [image, setImage] = useState<string | null>(session?.user?.image || null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(image);
   const [isUploading, setIsUploading] = useState(false);
@@ -116,7 +115,9 @@ const ProfilePage: React.FC = () => {
               </div>
               <div className="relative">
                 {previewUrl ? (
-                  <img
+                  <Image
+                  width={80}
+                  height={80}
                     src={previewUrl}
                     alt="Selected Image"
                     className="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
