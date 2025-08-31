@@ -228,7 +228,7 @@ const JobDetailsPage: React.FC = () => {
             </motion.div>
 
             {/* Application Form */}
-            <motion.div
+            {session?.user?.type=== "candidate" && <motion.div
               variants={cardVariants}
               initial="hidden"
               animate="visible"
@@ -310,7 +310,7 @@ const JobDetailsPage: React.FC = () => {
                   <Send className="h-5 w-5 mr-2" /> Apply Now
                 </button>
               </form>
-            </motion.div>
+            </motion.div>}
           </div>
         </section>
       </main>
