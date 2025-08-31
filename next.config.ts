@@ -9,8 +9,21 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds:true
   },
   images:{
-    remotePatterns:[new URL("https://lh3.googleusercontent.com")]
-  }
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol:"https",
+        hostname:'**.githubusercontent.com',
+        port: '',
+        pathname: '/**',
+      }
+    ],
+  },
 };
 
 export default nextConfig;

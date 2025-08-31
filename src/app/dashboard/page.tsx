@@ -276,7 +276,7 @@ const DashboardPage: React.FC = () => {
                         <Image
                         width={96}
                         height={96}
-                          src={user?.image as string || null}
+                          src={user?.image as string}
                           alt="User Avatar"
                           className="object-cover w-24 h-24 rounded-full shadow-md"
                         />

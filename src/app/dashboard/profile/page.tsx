@@ -13,7 +13,7 @@ const ProfilePage: React.FC = () => {
   const [role, setRole] = useState<string>("candidate");
   const [name, setName] = useState<string>(session?.user?.name || "")
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(image);
+  const [previewUrl, setPreviewUrl] = useState<string | null>();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [removed, setRemoved] = useState(false)
@@ -128,10 +128,10 @@ const ProfilePage: React.FC = () => {
                       <Image
                         src={session?.user?.image}
                         alt="Profile Picture"
-                        width={90}
-                        height={90}
+                        width={80}
+                        height={80}
                         priority={true}
-                        className="rounded-full object-cover border-2 border-gray-300"
+                        className="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
                       />
                     </div>
                   ) : (
