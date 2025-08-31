@@ -130,9 +130,11 @@ const DashboardPage: React.FC = () => {
     setLoading(true);
     fetch("/api/user/applications")
       .then((res) => res.json())
-      .then((data) => setApplications(data?.applications))
+      .then((data) => {
+        setApplications(data?.applications);
+        setFilteredApplications(data?.applications);
+      })
       .finally(() => setLoading(false));
-    setFilteredApplications(applications);
   };
   const fetchJobs = () => {
     setLoading(true);
