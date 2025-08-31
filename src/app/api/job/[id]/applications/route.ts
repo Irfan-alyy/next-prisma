@@ -14,7 +14,7 @@ export async function GET(
   }
   try {
     const applications = await prisma.application.findMany({
-      where: { jobId: id, OR:[{status:"PENDING"},{status:"REVIEW"}] },
+      where: { jobId: id},
       select: {
         id:true,
         appliedAt: true,
