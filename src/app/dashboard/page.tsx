@@ -84,8 +84,8 @@ const DashboardPage: React.FC = () => {
   const [currentDetail, setCurrentDetail] = useState< Job | Application>()
   const [currentDetailType, setCurrentDetailType] = useState<'job' | 'application'>('job')
   const [loading, setLoading] = useState<Boolean>(false)
-  useEffect(() => {
 
+  useEffect(() => {
     try {
       setLoading(true)
       fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user)).finally(() => setLoading(false));

@@ -7,7 +7,8 @@ import { Briefcase, MapPin, DollarSign, Calendar, FileText, Edit, Check, X, User
 import { motion, Variants } from 'framer-motion';
 import UpdateModal from '@/components/UpdateModal';
 import DetailsModal from '@/components/DetailsModal';
-import { Job , Application} from '@/lib/types';
+import { Job, Application } from '@/lib/types';
+import { div } from 'framer-motion/client';
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -24,22 +25,21 @@ const JobDetailPage: React.FC = () => {
   const { data: session, status } = useSession();
   const params = useParams();
   const jobId = params.id as string;
-  const router= useRouter()
-  
-
+  const router = useRouter()
   const [job, setJob] = useState<Job | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<{ loading: boolean, for: "jobs" | "applications" | null }>({ loading: true, for: null });
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; data: Application | null }>({
     isOpen: false,
     data: null,
   });
+  const [selectedFilter, setSelectedFilter] = useState<"all" | "accepted" | "pending" | "rejected">("all")
+  const [filteredApplications, setFilteredApplications] = useState<Application[]>([])
 
   useEffect(() => {
     const fetchJobAndApplications = async () => {
       if (!session?.user?.id) return;
-      setLoading(true);
       try {
         // Fetch job details
         const jobRes = await fetch(`/api/job/${jobId}`);
@@ -50,19 +50,22 @@ const JobDetailPage: React.FC = () => {
           return;
         }
         setJob(jobData);
-
+        setLoading({loading:false, for:"jobs"})
         // Fetch applications for this job
+        setLoading({ loading: true, for: "applications" });
         const appsRes = await fetch(`/api/job/${jobId}/applications`);
         const appsData = await appsRes.json();
+        setLoading({ loading: false, for: "applications" });
         setApplications(appsData);
+        setFilteredApplications(appsData)
       } catch (error) {
         console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
+      }finally{
+        setLoading({loading:false, for:null})
       }
     };
     fetchJobAndApplications();
-  }, [jobId,session]);
+  }, [jobId, session]);
 
   const handleUpdateJob = async (updatedJob: Partial<Job>) => {
     try {
@@ -72,7 +75,7 @@ const JobDetailPage: React.FC = () => {
         body: JSON.stringify(updatedJob),
       });
       if (res.ok) {
-        const data=await res.json()
+        const data = await res.json()
         console.log(data);
         setJob(data);
       }
@@ -81,12 +84,12 @@ const JobDetailPage: React.FC = () => {
     }
   };
 
-  const handleAction = async (jobId:string,appId: string, newStatus: 'Accepted' | 'Rejected') => {
+  const handleAction = async (jobId: string, appId: string, newStatus: 'Accepted' | 'Rejected') => {
     try {
       const res = await fetch(`/api/job/${jobId}/applications`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({appId:appId, status: newStatus }),
+        body: JSON.stringify({ appId: appId, status: newStatus }),
       });
       if (res.ok) {
         // Update local state
@@ -99,11 +102,22 @@ const JobDetailPage: React.FC = () => {
       console.error('Error updating application:', error);
     }
   };
+  useEffect(() => {
+    const filteredApplications = applications.filter(app => {
+      if (selectedFilter === "all") return true
+      return app.status.toLowerCase() === selectedFilter || app.status.toLowerCase() == "review" && selectedFilter === "pending"
+
+    })
+    setFilteredApplications(filteredApplications)
+  }, [selectedFilter])
+
+
 
   const handleViewApplication = (app: Application) => {
     setDetailsModal({ isOpen: true, data: app });
   };
-  if (status === 'loading' || loading) {
+
+  if (loading.loading && loading.for!=="applications") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 font-inter">
         <motion.div
@@ -115,10 +129,10 @@ const JobDetailPage: React.FC = () => {
           Loading...
         </motion.div>
       </div>
-    );
+    )
   }
 
-  if (!job) {
+  if (!job && !loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 font-inter">
         <p className="text-gray-600 text-lg">Job not found or unauthorized.</p>
@@ -140,10 +154,10 @@ const JobDetailPage: React.FC = () => {
           </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 animate-fade-in-up">
-              {job.title}
+              {job?.title}
             </h1>
             <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200">
-              {job.company} - {job.location}
+              {job?.company} - {job?.location}
             </p>
           </div>
         </section>
@@ -157,106 +171,159 @@ const JobDetailPage: React.FC = () => {
               animate="visible"
               className="bg-white rounded-xl shadow-2xl p-8 md:p-10 transform transition-all duration-300 ease-in-out hover:shadow-3xl mb-12"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-800">Job Details</h2>
-                <button
-                  onClick={() => setUpdateModalOpen(true)}
-                  className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+              {(loading.loading && loading.for === "jobs") ? <div className="min-h-8/12 flex items-center justify-center  font-inter">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-white text-lg font-semibold"
                 >
-                  <Edit className="h-5 w-5 mr-2" />
-                  Edit Job
-                </button>
-              </div>
-              <div className="space-y-6">
-                <div className="flex items-center">
-                  <Briefcase className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Company:</span> {job.company}</p>
-                </div>
-                <div className="flex items-center">
-                  <MapPin className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Location:</span> {job.location}</p>
-                </div>
-                <div className="flex items-center">
-                  <DollarSign className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Salary:</span> {job.salary}</p>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Contract:</span> {job.contract}</p>
-                </div>
-                <div className="flex items-start">
-                  <FileText className="h-6 w-6 text-indigo-600 mr-4 mt-1" />
-                  <p className="text-gray-700"><span className="font-semibold">Description:</span> {job.description}</p>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-6 w-6 text-indigo-600 mr-4" />
-                  <p className="text-gray-700"><span className="font-semibold">Posted:</span> {new Date(job.postedAt).toLocaleDateString()}</p>
-                </div>
-              </div>
+                  Loading...
+                </motion.div>
+              </div> :
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold text-gray-800">Job Details</h2>
+                    <button
+                      onClick={() => setUpdateModalOpen(true)}
+                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+                    >
+                      <Edit className="h-5 w-5 mr-2" />
+                      Edit Job
+                    </button>
+                  </div>
+                  <div className="space-y-6">
+                    <div className="flex items-center">
+                      <Briefcase className="h-6 w-6 text-indigo-600 mr-4" />
+                      <p className="text-gray-700"><span className="font-semibold">Company:</span> {job?.company}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-6 w-6 text-indigo-600 mr-4" />
+                      <p className="text-gray-700"><span className="font-semibold">Location:</span> {job?.location}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <DollarSign className="h-6 w-6 text-indigo-600 mr-4" />
+                      <p className="text-gray-700"><span className="font-semibold">Salary:</span> {job?.salary}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-6 w-6 text-indigo-600 mr-4" />
+                      <p className="text-gray-700"><span className="font-semibold">Contract:</span> {job?.contract}</p>
+                    </div>
+                    <div className="flex items-start">
+                      <FileText className="h-6 w-6 text-indigo-600 mr-4 mt-1" />
+                      <p className="text-gray-700"><span className="font-semibold">Description:</span> {job?.description}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-6 w-6 text-indigo-600 mr-4" />
+                      <p className="text-gray-700"><span className="font-semibold">Posted:</span> {job?.postedAt ? new Date(job?.postedAt).toLocaleDateString() : ""}</p>
+                    </div>
+                  </div>
+                </div>}
             </motion.div>
 
             {/* Applications Section */}
+
             <motion.div
               variants={cardVariants}
               initial="hidden"
               animate="visible"
               className="bg-white rounded-xl shadow-2xl p-8 md:p-10 transform transition-all duration-300 ease-in-out hover:shadow-3xl"
             >
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Applications</h2>
-              {applications.length === 0 ? (
-                <p className="text-gray-600 text-center">No applications yet.</p>
-              ) : (
-                <div className="space-y-6">
-                  {applications.map((app) => (
-                    <motion.div
-                      key={app.id}
-                      variants={cardVariants}
-                      className="border border-gray-200 rounded-md p-4"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-800">{app.applicant.name}</h3>
-                          <p className="text-gray-600 flex items-center">
-                            <Mail className="h-5 w-5 mr-2" />
-                            {app.applicant.email}
-                          </p>
-                          <p className="text-gray-500 text-sm flex items-center">
-                            <User className="h-5 w-5 mr-2" />
-                            {app.applicant.name}
-                          </p>
-                          <p className="text-gray-500 text-sm">Applied: {new Date(app.appliedAt).toLocaleDateString()}</p>
-                          <p className="text-gray-500 text-sm">Status: {app.status}</p>
-                        </div>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleViewApplication(app)}
-                            className="text-indigo-600 hover:text-indigo-800"
-                          >
-                            <Eye className="h-5 w-5" />
-                          </button>
-                          {app.resume && (
-                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800">
-                              <FileText className="h-5 w-5" />
-                            </a>
-                          )}
-                          <button
-                            onClick={() => handleAction(jobId,app.id, 'Accepted')}
-                            className="text-green-600 hover:text-green-800"
-                          >
-                            <Check className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={() => handleAction(jobId,app.id, 'Rejected')}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <X className="h-5 w-5" />
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+              <div className='flex items-center justify-between pb-10'>
+
+                <h2 className="text-3xl font-bold text-gray-800">Applications</h2>
+                <div>
+                  {applications?.length > 0 && <div className='flex w-full justify-evenly text-black'>
+                    <button
+                      onClick={() => { setSelectedFilter("all") }}
+                      className={`inline-flex items-center justify-center w-25 py-2 ${selectedFilter == "all" ? "bg-indigo-600 text-white" : "text-black"}  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}>
+                      All
+                    </button>
+                    <button
+                      onClick={() => { setSelectedFilter("accepted") }}
+                      className={`inline-flex items-center justify-center w-25 py-2 ${selectedFilter == "accepted" ? "bg-indigo-600 text-white" : "text-black"} rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}>
+                      Accepted
+                    </button>
+                    <button
+                      onClick={() => { setSelectedFilter("pending") }}
+                      className={`inline-flex items-center justify-center w-25 py-2 ${selectedFilter == "pending" ? "bg-indigo-600 text-white" : "text-black"} rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}>
+                      Pending
+                    </button>
+                    <button
+                      onClick={() => { setSelectedFilter("rejected") }}
+                      className={`inline-flex items-center justify-center w-25 py-2  ${selectedFilter == "rejected" ? "bg-indigo-600 text-white" : "text-black"}  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}>
+                      Rejected
+                    </button>
+                  </div>}
                 </div>
-              )}
+              </div>
+
+              {loading.loading && loading.for === "applications" ? <div className="min-h-8/12 flex items-center justify-center font-inter">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-black text-lg font-semibold"
+                >
+                  Loading...
+                </motion.div>
+              </div> :
+                applications.length === 0 ? (
+                  <p className="text-gray-600 text-center">No applications yet.</p>
+                ) : (
+                  <div className="space-y-6">
+                    {filteredApplications.length == 0 ?
+                      <p className="text-gray-600 text-center">No Applications with '{selectedFilter}' status .</p> :
+                      filteredApplications.map((app) => (
+                        <motion.div
+                          key={app.id}
+                          variants={cardVariants}
+                          className="border border-gray-200 rounded-md p-4"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-800">{app.applicant.name}</h3>
+                              <p className="text-gray-600 flex items-center">
+                                <Mail className="h-5 w-5 mr-2" />
+                                {app.applicant.email}
+                              </p>
+                              <p className="text-gray-500 text-sm flex items-center">
+                                <User className="h-5 w-5 mr-2" />
+                                {app.applicant.name}
+                              </p>
+                              <p className="text-gray-500 text-sm">Applied: {new Date(app.appliedAt).toLocaleDateString()}</p>
+                              <p className="text-gray-500 text-sm">Status: {app.status}</p>
+                            </div>
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleViewApplication(app)}
+                                className="text-indigo-600 hover:text-indigo-800"
+                              >
+                                <Eye className="h-5 w-5" />
+                              </button>
+                              {app.resume && (
+                                <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800">
+                                  <FileText className="h-5 w-5" />
+                                </a>
+                              )}
+                              <button
+                                onClick={() => handleAction(jobId, app.id, 'Accepted')}
+                                className="text-green-600 hover:text-green-800"
+                              >
+                                <Check className="h-5 w-5" />
+                              </button>
+                              <button
+                                onClick={() => handleAction(jobId, app.id, 'Rejected')}
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                <X className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
+                )}
             </motion.div>
           </div>
         </section>
@@ -266,7 +333,7 @@ const JobDetailPage: React.FC = () => {
         isOpen={updateModalOpen}
         onClose={() => setUpdateModalOpen(false)}
         type="job"
-        data={job}
+        data={job as Job}
         onSubmit={handleUpdateJob}
       />
 
