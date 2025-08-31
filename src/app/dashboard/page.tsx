@@ -1,56 +1,59 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { User, FileText, Edit, Trash2, LogIn } from 'lucide-react';
-import { motion, Variants } from 'framer-motion';
-import { ToastContainer, toast } from "react-toastify"
-import DetailsModal from '@/components/DetailsModal';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { User, FileText, Edit, Trash2, LogIn } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+import { ToastContainer, toast } from "react-toastify";
+import DetailsModal from "@/components/DetailsModal";
+import Image from "next/image";
 
 interface User {
-  createdAt: Date,
-  email: string
-  emailVerified: Date | null
-  id: string
-  image: string
-  name: string
-  updatedAt: Date
+  createdAt: Date;
+  email: string;
+  emailVerified: Date | null;
+  id: string;
+  image: string;
+  name: string;
+  updatedAt: Date;
 }
 
 interface Job {
-  id: string,
-  title: string,
-  description: string,
-  salary: string,
-  postedAt: Date
-  company: string,
-  location: string,
-  contract: string
-  postedById: string
+  id: string;
+  title: string;
+  description: string;
+  salary: string;
+  postedAt: Date;
+  company: string;
+  location: string;
+  contract: string;
+  postedById: string;
 }
 interface Application {
-  id: string,
-  description: string,
-  appliedAt: Date,
-  status: "PENDING" | "ACCEPTED" | "REJECTED",
-  jobId: string,
-  userId: string,
-  resume: string,
-  job: Job
+  id: string;
+  description: string;
+  appliedAt: Date;
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  jobId: string;
+  userId: string;
+  resume: string;
+  job: Job;
 }
-
 
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
 };
 
 const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 const buttonVariants: Variants = {
@@ -59,84 +62,113 @@ const buttonVariants: Variants = {
     y: 0,
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.5, ease: 'easeOut', type: 'spring', stiffness: 120 },
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+      type: "spring",
+      stiffness: 120,
+    },
   },
   hover: { scale: 1.05, transition: { duration: 0.2 } },
 };
 
 const DashboardPage: React.FC = () => {
   const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState<'profile' | 'jobs' | 'applications'>('profile');
+  const [activeTab, setActiveTab] = useState<
+    "profile" | "jobs" | "applications"
+  >("profile");
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<Array<Job>>([]);
   const [applications, setApplications] = useState<Array<Application>>([]);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false)
-  const [currentDetail, setCurrentDetail] = useState< Job | Application>()
-  const [currentDetailType, setCurrentDetailType] = useState<'job' | 'application'>('job')
-  const [loading, setLoading] = useState<boolean>(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
+  const [currentDetail, setCurrentDetail] = useState<Job | Application>();
+  const [currentDetailType, setCurrentDetailType] = useState<
+    "job" | "application"
+  >("job");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedFilter, setSelectedFilter] = useState<
+    "all" | "accepted" | "pending" | "rejected"
+  >("all");
+  const [filteredApplications, setFilteredApplications] = useState<
+    Application[]
+  >([]);
   useEffect(() => {
     try {
-      setLoading(true)
-      fetch('/api/user').then(res => res.json()).then(data => setUser(data?.user)).finally(() => setLoading(false));
+      setLoading(true);
+      fetch("/api/user")
+        .then((res) => res.json())
+        .then((data) => setUser(data?.user))
+        .finally(() => setLoading(false));
     } catch (error: unknown) {
       console.log("Error occured in fetching user data", error?.message);
     }
   }, []);
 
-
-
-
-
   const handleJobDelete = async (id: string) => {
-    const response = await fetch(`/api/job/${id}`, { method: "DELETE" })
+    const response = await fetch(`/api/job/${id}`, { method: "DELETE" });
     if (response.ok) {
       toast.warning("Job Deleted Successfully");
-      const remainingJobs = jobs.filter(job => job.id !== id)
-      setJobs(remainingJobs)
-      return
+      const remainingJobs = jobs.filter((job) => job.id !== id);
+      setJobs(remainingJobs);
+      return;
     }
     const data = await response.json();
-    toast.error(data?.message || "Failed to delete Job")
-  }
-
+    toast.error(data?.message || "Failed to delete Job");
+  };
 
   const handleJobModalClose = () => {
-    setIsDetailModalOpen(false)
-  }
+    setIsDetailModalOpen(false);
+  };
 
   const handleApplicationModal = (application: Application) => {
-    setCurrentDetail(application)
-    setCurrentDetailType("application")
-    setIsDetailModalOpen(true)
-  }
+    setCurrentDetail(application);
+    setCurrentDetailType("application");
+    setIsDetailModalOpen(true);
+  };
 
   const fetchApplications = () => {
-    setLoading(true)
-    fetch('/api/user/applications').then(res => res.json()).then(data => setApplications(data?.applications)).finally(() => setLoading(false));
-  }
+    setLoading(true);
+    fetch("/api/user/applications")
+      .then((res) => res.json())
+      .then((data) => setApplications(data?.applications))
+      .finally(() => setLoading(false));
+    setFilteredApplications(applications);
+  };
   const fetchJobs = () => {
-    setLoading(true)
-    fetch('/api/user/jobs').then(res => res.json()).then(data => setJobs(data?.jobs)).finally(() => setLoading(false));
-
-  }
+    setLoading(true);
+    fetch("/api/user/jobs")
+      .then((res) => res.json())
+      .then((data) => setJobs(data?.jobs))
+      .finally(() => setLoading(false));
+  };
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
-     !!(jobs && jobs.length>0) || fetchJobs()
-        setActiveTab("jobs")
+        !!(jobs && jobs.length > 0) || fetchJobs();
+        setActiveTab("jobs");
         break;
       case "application":
-        !!(applications && applications.length>0) || fetchApplications();
-        setActiveTab("applications")
+        !!(applications && applications.length > 0) || fetchApplications();
+        setActiveTab("applications");
         break;
       default:
-        setActiveTab("profile")
+        setActiveTab("profile");
         break;
     }
-  }
+  };
 
+  useEffect(() => {
+    const filteredApplications = applications.filter((app) => {
+      if (selectedFilter === "all") return true;
+      return (
+        app.status.toLowerCase() === selectedFilter ||
+        (app.status.toLowerCase() == "review" && selectedFilter === "pending")
+      );
+    });
+    setFilteredApplications(filteredApplications);
+  }, [selectedFilter]);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 font-inter">
         <motion.div
@@ -155,10 +187,33 @@ const DashboardPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 font-inter relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10">
-          <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-            <circle cx="20" cy="20" r="15" fill="currentColor" className="text-indigo-300"></circle>
-            <circle cx="80" cy="50" r="25" fill="currentColor" className="text-purple-300"></circle>
-            <circle cx="50" cy="80" r="10" fill="currentColor" className="text-indigo-200"></circle>
+          <svg
+            className="w-full h-full"
+            fill="none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <circle
+              cx="20"
+              cy="20"
+              r="15"
+              fill="currentColor"
+              className="text-indigo-300"
+            ></circle>
+            <circle
+              cx="80"
+              cy="50"
+              r="25"
+              fill="currentColor"
+              className="text-purple-300"
+            ></circle>
+            <circle
+              cx="50"
+              cy="80"
+              r="10"
+              fill="currentColor"
+              className="text-indigo-200"
+            ></circle>
           </svg>
         </div>
         <motion.div
@@ -203,10 +258,33 @@ const DashboardPage: React.FC = () => {
         {/* Hero Section */}
         <section className="relative bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-20 md:py-28 overflow-hidden rounded-b-lg shadow-xl">
           <div className="absolute inset-0 z-0 opacity-10">
-            <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-              <circle cx="20" cy="20" r="15" fill="currentColor" className="text-indigo-400"></circle>
-              <circle cx="80" cy="50" r="25" fill="currentColor" className="text-purple-400"></circle>
-              <circle cx="50" cy="80" r="10" fill="currentColor" className="text-indigo-300"></circle>
+            <svg
+              className="w-full h-full"
+              fill="none"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="xMidYMid slice"
+            >
+              <circle
+                cx="20"
+                cy="20"
+                r="15"
+                fill="currentColor"
+                className="text-indigo-400"
+              ></circle>
+              <circle
+                cx="80"
+                cy="50"
+                r="25"
+                fill="currentColor"
+                className="text-purple-400"
+              ></circle>
+              <circle
+                cx="50"
+                cy="80"
+                r="10"
+                fill="currentColor"
+                className="text-indigo-300"
+              ></circle>
             </svg>
           </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -214,7 +292,8 @@ const DashboardPage: React.FC = () => {
               Your Dashboard
             </h1>
             <p className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200">
-              Manage your profile, job listings, and applications all in one place.
+              Manage your profile, job listings, and applications all in one
+              place.
             </p>
           </div>
         </section>
@@ -226,31 +305,38 @@ const DashboardPage: React.FC = () => {
             <div className="flex justify-center space-x-4 mb-8">
               <button
                 onClick={() => handleTabChange("profile")}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'profile'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
+                  activeTab === "profile"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                }`}
               >
                 Profile
               </button>
-             { session?.user?.type=="employer" && <button
-                onClick={() => handleTabChange("job")}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'jobs'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              {session?.user?.type == "employer" && (
+                <button
+                  onClick={() => handleTabChange("job")}
+                  className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
+                    activeTab === "jobs"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
-              >
-                My Jobs
-              </button>}
-             {session?.user?.type=="candidate" && <button
-                onClick={() => handleTabChange("application")}
-                className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${activeTab === 'applications'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                >
+                  My Jobs
+                </button>
+              )}
+              {session?.user?.type == "candidate" && (
+                <button
+                  onClick={() => handleTabChange("application")}
+                  className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
+                    activeTab === "applications"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
-              >
-                My Applications
-              </button>}
+                >
+                  My Applications
+                </button>
+              )}
             </div>
 
             <motion.div
@@ -259,22 +345,26 @@ const DashboardPage: React.FC = () => {
               animate="visible"
               className="bg-white rounded-xl shadow-2xl p-8 md:p-10 transform transition-all duration-300 ease-in-out hover:shadow-3xl"
             >
-              {activeTab === 'profile' && (
+              {activeTab === "profile" && (
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Profile</h2>
-                  {loading ? <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className=" text-lg font-semibold text-black text-center"
-                  >
-                    Loading...
-                  </motion.div> :
+                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+                    Your Profile
+                  </h2>
+                  {loading ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className=" text-lg font-semibold text-black text-center"
+                    >
+                      Loading...
+                    </motion.div>
+                  ) : (
                     <div>
                       <div className="flex items-center justify-center mb-6">
                         <Image
-                        width={96}
-                        height={96}
+                          width={96}
+                          height={96}
                           src={user?.image as string}
                           alt="User Avatar"
                           className="object-cover w-24 h-24 rounded-full shadow-md"
@@ -283,11 +373,17 @@ const DashboardPage: React.FC = () => {
                       <div className="space-y-4">
                         <div className="flex items-center">
                           <User className="h-6 w-6 text-indigo-600 mr-4" />
-                          <p className="text-gray-700"><span className="font-semibold">Name:</span> {user?.name}</p>
+                          <p className="text-gray-700">
+                            <span className="font-semibold">Name:</span>{" "}
+                            {user?.name}
+                          </p>
                         </div>
                         <div className="flex items-center">
                           <FileText className="h-6 w-6 text-indigo-600 mr-4" />
-                          <p className="text-gray-700"><span className="font-semibold">Email:</span> {user?.email}</p>
+                          <p className="text-gray-700">
+                            <span className="font-semibold">Email:</span>{" "}
+                            {user?.email}
+                          </p>
                         </div>
                         <Link
                           href={"/dashboard/profile"}
@@ -298,14 +394,16 @@ const DashboardPage: React.FC = () => {
                         </Link>
                       </div>
                     </div>
-                  }
+                  )}
                 </div>
               )}
 
-              {activeTab === 'jobs' && (
+              {activeTab === "jobs" && (
                 <div className="space-y-6">
-                  <div className='flex justify-between items-center w-full'>
-                    <h2 className="text-3xl font-bold text-gray-800 text-center">Your Job Listings</h2>
+                  <div className="flex justify-between items-center w-full">
+                    <h2 className="text-3xl font-bold text-gray-800 text-center">
+                      Your Job Listings
+                    </h2>
                     <Link
                       href="/post-job"
                       className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
@@ -313,78 +411,169 @@ const DashboardPage: React.FC = () => {
                       Post New Job
                     </Link>
                   </div>
-                  {loading ? <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-lg font-semibold text-black text-center"
-                  >
-                    Loading...
-                  </motion.div> :
-                    jobs?.length === 0 ? (
-                      <p className="text-gray-600 text-center">You haven’t posted any jobs yet.</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {jobs.map((job) => (
-                          <motion.div
-                            key={job.id as string}
-                            variants={itemVariants}
-                            className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
+                  {loading ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-lg font-semibold text-black text-center"
+                    >
+                      Loading...
+                    </motion.div>
+                  ) : jobs?.length === 0 ? (
+                    <p className="text-gray-600 text-center">
+                      You haven’t posted any jobs yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {jobs.map((job) => (
+                        <motion.div
+                          key={job.id as string}
+                          variants={itemVariants}
+                          className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
+                        >
+                          <Link
+                            href={`/dashboard/job/${job.id}`}
+                            className="cursor-pointer"
                           >
-                            <Link href={`/dashboard/job/${job.id}`} className='cursor-pointer' >
-                              <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
-                              <p className="text-gray-600">{job.company} - {job.location}</p>
-                              <p className="text-gray-500 text-sm">Contract: {job.contract}</p>
-                            </Link>
-                            <div className="flex space-x-2">
-                              <button title='delete' className="text-red-600 hover:text-red-800" onClick={() => handleJobDelete(job.id)}>
-                                <Trash2 className="h-5 w-5" />
-                              </button>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
+                            <h3 className="text-lg font-semibold text-gray-800">
+                              {job.title}
+                            </h3>
+                            <p className="text-gray-600">
+                              {job.company} - {job.location}
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                              Contract: {job.contract}
+                            </p>
+                          </Link>
+                          <div className="flex space-x-2">
+                            <button
+                              title="delete"
+                              className="text-red-600 hover:text-red-800"
+                              onClick={() => handleJobDelete(job.id)}
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
-              {activeTab === 'applications' && (
+              {activeTab === "applications" && (
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Your Applications</h2>
-                  {loading ? <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-black text-lg font-semibold text-center"
-                  >
-                    Loading...
-                  </motion.div> :
-                    applications?.length === 0 ? (
-                      <p className="text-gray-600 text-center">You haven’t applied to any jobs yet.</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {applications.map((app) => (
-                          <motion.div
-                            key={app.id as string}
-                            variants={itemVariants}
-                            onClick={() => handleApplicationModal(app)}
-                            className="border border-gray-200 rounded-md p-4 cursor-pointer"
-                          >
-                            <h3 className="text-lg font-semibold text-gray-800">{app.job?.title}</h3>
-                            <p className="text-gray-600">{app?.job?.company}</p>
-                            <p className="text-gray-500 text-sm">Applied At: {(new Date(app?.appliedAt))?.toLocaleString()}</p>
-                            <p className="text-gray-500 text-sm">Status: {app?.status}</p>
-                          </motion.div>
-                        ))}
+                  <div className="flex justify-between">
+                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+                    Your Applications
+                  </h2>
+                  <div>
+                    {applications?.length > 0 && (
+                      <div className="flex gap-5 w-full justify-evenly text-black">
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("all");
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "all"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          All
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("accepted");
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "accepted"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Accepted
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("pending");
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "pending"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Pending
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("rejected");
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2  ${
+                            selectedFilter == "rejected"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Rejected
+                        </button>
                       </div>
                     )}
+                  </div>
+                  </div>
+                  {loading ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-black text-lg font-semibold text-center"
+                    >
+                      Loading...
+                    </motion.div>
+                  ) : applications?.length === 0 ? (
+                    <p className="text-gray-600 text-center">
+                      You haven’t applied to any jobs yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredApplications.map((app) => (
+                        <motion.div
+                          key={app.id as string}
+                          variants={itemVariants}
+                          onClick={() => handleApplicationModal(app)}
+                          className="border border-gray-200 rounded-md p-4 cursor-pointer"
+                        >
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {app.job?.title}
+                          </h3>
+                          <p className="text-gray-600">{app?.job?.company}</p>
+                          <p className="text-gray-500 text-sm">
+                            Applied At:{" "}
+                            {new Date(app?.appliedAt)?.toLocaleString()}
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            Status: {app?.status}
+                          </p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>
           </div>
         </section>
       </main>
-      {isDetailModalOpen && <DetailsModal isOpen={isDetailModalOpen} onClose={handleJobModalClose} type={currentDetailType} data={currentDetail as Job | Application} />}
+      {isDetailModalOpen && (
+        <DetailsModal
+          isOpen={isDetailModalOpen}
+          onClose={handleJobModalClose}
+          type={currentDetailType}
+          data={currentDetail as Job | Application}
+        />
+      )}
       <ToastContainer />
     </div>
   );
