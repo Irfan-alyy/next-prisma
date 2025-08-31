@@ -139,13 +139,13 @@ const Navbar: React.FC = () => {
           >
             Find Jobs
           </Link>
-          <Link
+         {session.data?.user?.type==="employer" && <Link
             href="/post-job"
             className="block text-gray-700 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-base font-medium"
             onClick={() => setIsOpen(false)} // Close menu on click
           >
             Post a Job
-          </Link>
+          </Link>}
           <Link
             href="/about"
             className="block text-gray-700 hover:bg-indigo-600 hover:text-white px-3 py-2 rounded-md text-base font-medium"
