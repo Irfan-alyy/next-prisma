@@ -50,7 +50,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
                   <button type='submit'>
                     <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </button>
-                  <FilterIcon className='right-10 text-black'/>
+                  <FilterIcon className='z-100 cursor-pointer `right-10 text-black'/>
                 </div>
               </form>
             </div>
