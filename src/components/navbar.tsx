@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
             <Link href="/" className="text-2xl font-bold text-indigo-600">
               JobBoard
             </Link>
-          </div>
+          </div>           
           {/* Desktop Menu Items */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link href="/jobs" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">

@@ -1,10 +1,11 @@
-'use client'; // This directive is necessary for client-side interactivity in Next.js App Router
+"use client"; // This directive is necessary for client-side interactivity in Next.js App Router
 
-import React, { useState } from 'react';
-import { Mail,LogIn } from 'lucide-react'; // Importing icons from lucide-react
-import { motion, AnimatePresence, Variants } from 'framer-motion'; // Importing framer-motion
-import { signIn } from 'next-auth/react';
-import { Loader } from 'lucide-react';
+import React, { useState } from "react";
+import { Mail, LogIn } from "lucide-react"; // Importing icons from lucide-react
+import { motion, AnimatePresence, Variants } from "framer-motion"; // Importing framer-motion
+import { signIn } from "next-auth/react";
+import { Loader } from "lucide-react";
+import LoadingSpinner from "@/components/spinners";
 
 // Inline SVG for Google Logo
 const GoogleIcon: React.FC = () => (
@@ -15,10 +16,22 @@ const GoogleIcon: React.FC = () => (
     height="20px"
     className="mr-2"
   >
-    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.945,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,2.867,0.702,5.55,1.937,7.961l6.571-4.819C11.345,26.892,7.055,24,7.055,24C7.055,24,6.306,14.691,6.306,14.691z" />
-    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.571-4.819C29.345,35.108,25.055,38,24,38c-5.055,0-9.345-3.108-11.303-7.961l-6.571,4.819C9.954,41.947,14.732,44,24,44z" />
-    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.002,0.003-0.003l6.571,4.819C34.046,41.947,38.824,44,43.611,44z" />
+    <path
+      fill="#FFC107"
+      d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+    />
+    <path
+      fill="#FF3D00"
+      d="M6.306,14.691l6.571,4.819C14.655,15.108,18.945,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,2.867,0.702,5.55,1.937,7.961l6.571-4.819C11.345,26.892,7.055,24,7.055,24C7.055,24,6.306,14.691,6.306,14.691z"
+    />
+    <path
+      fill="#4CAF50"
+      d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.571-4.819C29.345,35.108,25.055,38,24,38c-5.055,0-9.345-3.108-11.303-7.961l-6.571,4.819C9.954,41.947,14.732,44,24,44z"
+    />
+    <path
+      fill="#1976D2"
+      d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.002,0.003-0.003l6.571,4.819C34.046,41.947,38.824,44,43.611,44z"
+    />
   </svg>
 );
 
@@ -37,20 +50,31 @@ const GithubIcon: React.FC = () => (
 );
 
 // Variants for Framer Motion animations
-const cardVariants:Variants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3, ease: "easeIn" } },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.3, ease: "easeIn" },
+  },
 };
 
-const itemVariants:Variants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
 };
 
 const AuthPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [loading,setLoading]=useState<{provider:string, loading:boolean}>({provider:"",loading:false})
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState<{
+    provider: string;
+    loading: boolean;
+  }>({ provider: "", loading: false });
 
   // const handleSubmit = (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -73,25 +97,24 @@ const AuthPage: React.FC = () => {
   // };
 
   const handleGoogleSignIn = () => {
-    setLoading({provider:"google",loading:true})
-    console.log('Continue with Google clicked');
-    signIn('google', {callbackUrl:"/"})
+    setLoading({ provider: "google", loading: true });
+    console.log("Continue with Google clicked");
+    signIn("google", { callbackUrl: "/" });
     // Example: signIn('google');
   };
 
   const handleGithubSignIn = () => {
-    setLoading({provider:"github",loading:true})
-    console.log('Continue with GitHub clicked');
-    signIn('github', {callbackUrl:"/"})
+    setLoading({ provider: "github", loading: true });
+    console.log("Continue with GitHub clicked");
+    signIn("github", { callbackUrl: "/" });
     // Example: signIn('github');
   };
-  const handleEmailSignIn = (e:React.FormEvent)=> {
+  const handleEmailSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading({provider:"email",loading:true})
-    console.log('Continue with Magic Link clicked');
-    signIn('nodemailer', {email:email,callbackUrl:"/"})
+    setLoading({ provider: "email", loading: true });
+    console.log("Continue with Magic Link clicked");
+    signIn("nodemailer", { email: email, callbackUrl: "/" });
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4 font-inter">
@@ -108,9 +131,7 @@ const AuthPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-3xl font-bold text-center text-gray-800 mb-8"
-          >
-          
-          </motion.h2>
+          ></motion.h2>
 
           {/* Social Login Buttons */}
           <motion.div
@@ -129,30 +150,40 @@ const AuthPage: React.FC = () => {
             <motion.button
               variants={itemVariants}
               onClick={handleGoogleSignIn}
-              disabled={loading.provider==="google" && loading.loading}
-              className="w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+              disabled={loading.provider === "google" && loading.loading}
+              className="disabled:cursor-progress w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
             >
-              { (loading.provider=="google" && loading.loading) && <span className='pr-5'>
-                <Loader/>
-              </span>}
-              <span className='flex items-center justify-between'>
-                <GoogleIcon />
-              Continue with Google
+              {loading.provider == "google" && loading.loading ? (
+                <LoadingSpinner
+                  variant="spinner"
+                  color=""
+                  className="text-indigo-600"
+                />
+              ) : (
+                <span className="flex items-center justify-between">
+                  <GoogleIcon />
+                  Continue with Google
                 </span>
+              )}
             </motion.button>
             <motion.button
               variants={itemVariants}
               onClick={handleGithubSignIn}
-              disabled={loading.provider==="github" && loading.loading}
-              className="w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+              disabled={loading.provider === "github" && loading.loading}
+              className="disabled:cursor-progress w-full flex items-center justify-center gap-5 px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
             >
-              { (loading.provider=="github" && loading.loading) && <span className='pr-5'>
-                <Loader/>
-              </span>}
-              <span className='flex items-center justify-between'>
-                <GithubIcon/>
+              {loading.provider == "github" && loading.loading ? (
+                <LoadingSpinner
+                  variant="spinner"
+                  color=""
+                  className="text-indigo-600"
+                />
+              ) : (
+                <span className="flex items-center justify-between">
+                  <GithubIcon />
                   Continue with Github
                 </span>
+              )}
             </motion.button>
           </motion.div>
 
@@ -181,8 +212,10 @@ const AuthPage: React.FC = () => {
             }}
             className="space-y-6"
           >
-             <motion.div variants={itemVariants} className="relative">
-              <label htmlFor="email" className="sr-only">Email address</label>
+            <motion.div variants={itemVariants} className="relative">
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </div>
@@ -198,20 +231,24 @@ const AuthPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </motion.div>
-          <motion.button
+            <motion.button
               variants={itemVariants}
-              type='submit'
-              disabled={loading.provider==="email" && loading.loading}
-              className="w-full flex justify-center gap-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
+              type="submit"
+              disabled={loading.provider === "email" && loading.loading}
+              className="disabled:cursor-progress  w-full flex justify-center gap-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
             >
-              { (loading.provider=="email" && loading.loading) && <span className='pl-10'>
-                <Loader/>
-              </span>}
-              <span className='flex items-center justify-between'>
-                <LogIn />
-              Login with Email
+              {loading.provider == "email" && loading.loading ? (
+                <LoadingSpinner
+                  variant="spinner"
+                  color=""
+                  className="text-white"
+                />
+              ) : (
+                <span className="flex items-center justify-between">
+                  Login with Email
                 </span>
-          </motion.button>
+              )}
+            </motion.button>
           </motion.form>
           {/* Email/Password Form */}
           {/* <motion.form
@@ -284,7 +321,7 @@ const AuthPage: React.FC = () => {
               />
             </motion.div> */}
 
-            {/* {!isLogin && (
+          {/* {!isLogin && (
               <motion.div variants={itemVariants} className="relative">
                 <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -303,14 +340,14 @@ const AuthPage: React.FC = () => {
                 />
               </motion.div>
             )} */}
-{/* 
+          {/* 
             <motion.button
               variants={itemVariants}
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105"
             >
               <LogIn className="h-5 w-5 mr-2" /> Sign In With Email */}
-              {/* {isLogin ? (
+          {/* {isLogin ? (
                 <>
                 </>
               ) : (
@@ -318,8 +355,8 @@ const AuthPage: React.FC = () => {
                   <UserPlus className="h-5 w-5 mr-2" /> Sign Up
                 </>
               )} */}
-            {/* </motion.button> */}
-          {/* </motion.form> */} 
+          {/* </motion.button> */}
+          {/* </motion.form> */}
 
           {/* Toggle between Login and Signup */}
           {/* <motion.div
