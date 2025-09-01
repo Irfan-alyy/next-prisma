@@ -598,6 +598,7 @@ const DashboardPage: React.FC = () => {
                           <button
                             onClick={() => {
                               setSelectedFilter("all");
+                              setCurrentAPage(1)
                             }}
                             className={`inline-flex items-center justify-center w-25 py-2 ${
                               selectedFilter == "all"
@@ -610,6 +611,7 @@ const DashboardPage: React.FC = () => {
                           <button
                             onClick={() => {
                               setSelectedFilter("accepted");
+                              setCurrentAPage(1)
                             }}
                             className={`inline-flex items-center justify-center w-25 py-2 ${
                               selectedFilter == "accepted"
@@ -622,6 +624,7 @@ const DashboardPage: React.FC = () => {
                           <button
                             onClick={() => {
                               setSelectedFilter("pending");
+                              setCurrentAPage(1)
                             }}
                             className={`inline-flex items-center justify-center w-25 py-2 ${
                               selectedFilter == "pending"
@@ -634,6 +637,7 @@ const DashboardPage: React.FC = () => {
                           <button
                             onClick={() => {
                               setSelectedFilter("rejected");
+                              setCurrentAPage(1)
                             }}
                             className={`inline-flex items-center justify-center w-25 py-2  ${
                               selectedFilter == "rejected"

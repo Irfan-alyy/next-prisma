@@ -16,36 +16,41 @@ export async function GET(req: NextRequest) {
   const pageSize = params.get("pageSize");
   const status = params.get("type");
   console.log(page, pageSize);
+  let statusFilter={};
+  if (status?.toLowerCase() === "pending") {
+    statusFilter = {
+      OR: [
+        { status: { contains: "REVIEW", mode: "insensitive" } },
+        { status: { contains: "PENDING", mode: "insensitive" } },
+      ],
+    };
+  } 
+  else if(status==="all" || !status){
+   statusFilter={
+    status:{contains:""}
+   }
+  }
+  else {
+    statusFilter = {
+      status: {
+        equals: status as string,
+        mode: "insensitive",
+      },
+    };
+  }
+
   try {
     let applications;
     let count;
     if (session.user.type === "admin") {
       count = await prisma.application.count({
         where: {
-          status: {
-            contains:
-              status === "all"
-                ? ""
-                : status == "pending"
-                ? "REVIEW PENDING"
-                : status == "accepted"
-                ? "ACCEPTED"
-                : "REJECTED",
-          },
+          ...statusFilter,
         },
       });
       applications = await prisma.application.findMany({
         where: {
-          status: {
-            contains:
-              (status === "all" || null)
-                ? ""
-                : status == "pending"
-                ? "REVIEW PENDING"
-                : status == "accepted"
-                ? "ACCEPTED"
-                : "REJECTED",
-          },
+          ...statusFilter
         },
         select: {
           id: true,
