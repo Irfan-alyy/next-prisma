@@ -3,7 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { User, FileText, Edit, Trash2, LogIn } from "lucide-react";
+import {
+  User,
+  FileText,
+  Edit,
+  Trash2,
+  LogIn,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import DetailsModal from "@/components/DetailsModal";
@@ -18,7 +26,7 @@ interface User {
   image: string;
   name: string;
   updatedAt: Date;
-  type:string;
+  type: string;
 }
 
 // Animation variants
@@ -72,9 +80,10 @@ const DashboardPage: React.FC = () => {
   const [filteredApplications, setFilteredApplications] = useState<
     Application[]
   >([]);
-  const [currentPage,setCurrentPage]=useState<number>(1)
-  const [pageSize,setPageSize]=useState<number>(10)
-  const [totalPages,setTotalPages]=useState<number>()
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalJPages, setTotalJPages] = useState<number>(1);
+  const [totalAPages,setTotalAPages]=useState<number>(1)
   useEffect(() => {
     try {
       setLoading(true);
@@ -83,7 +92,10 @@ const DashboardPage: React.FC = () => {
         .then((data) => setUser(data?.user))
         .finally(() => setLoading(false));
     } catch (error: unknown) {
-      console.log("Error occured in fetching user data", (error as any)?.message);
+      console.log(
+        "Error occured in fetching user data",
+        (error as any)?.message
+      );
     }
   }, []);
 
@@ -116,7 +128,7 @@ const DashboardPage: React.FC = () => {
       .then((data) => {
         setApplications(data?.applications);
         setFilteredApplications(data?.applications);
-        setTotalPages(data?.totalPages)
+        setTotalAPages(data?.totalPages);
       })
       .finally(() => setLoading(false));
   };
@@ -125,22 +137,27 @@ const DashboardPage: React.FC = () => {
     fetch(`/api/user/jobs?page=${currentPage}&pageSize=${pageSize}`)
       .then((res) => res.json())
       .then((data) => {
-        setJobs(data?.jobs)
-        setTotalPages(data?.totalPages)
+        setJobs(data?.jobs);
+        setTotalJPages(data?.totalPages);
       })
       .finally(() => setLoading(false));
   };
-  useEffect(()=>{
-    activeTab==="jobs"? fetchJobs(): fetchApplications()
-  },[currentPage,pageSize])
+  useEffect(() => {
+    activeTab === "jobs" && fetchJobs();
+    activeTab == "applications" && fetchApplications();
+  }, [currentPage, pageSize]);
+
+
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
+        setCurrentPage(1);
         !!(jobs && jobs.length > 0) || fetchJobs();
         setActiveTab("jobs");
         break;
       case "application":
+        setCurrentPage(1);
         !!(applications && applications.length > 0) || fetchApplications();
         setActiveTab("applications");
         break;
@@ -149,17 +166,6 @@ const DashboardPage: React.FC = () => {
         break;
     }
   };
-
-  useEffect(() => {
-    const filteredApplications = applications.filter((app) => {
-      if (selectedFilter === "all") return true;
-      return (
-        app.status.toLowerCase() === selectedFilter ||
-        (app.status.toLowerCase() == "review" && selectedFilter === "pending")
-      );
-    });
-    setFilteredApplications(filteredApplications);
-  }, [selectedFilter]);
 
   if (status === "loading") {
     return (
@@ -306,7 +312,8 @@ const DashboardPage: React.FC = () => {
               >
                 Profile
               </button>
-              {session?.user?.type == "employer"  || session?.user?.type == "admin" && (
+              {(session?.user?.type == "employer" ||
+                session?.user?.type == "admin") && (
                 <button
                   onClick={() => handleTabChange("job")}
                   className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
@@ -318,7 +325,8 @@ const DashboardPage: React.FC = () => {
                   My Jobs
                 </button>
               )}
-              {session?.user?.type == "candidate" || session?.user?.type == "admin"  && (
+              {(session?.user?.type == "candidate" ||
+                session?.user?.type == "admin") && (
                 <button
                   onClick={() => handleTabChange("application")}
                   className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
@@ -359,13 +367,15 @@ const DashboardPage: React.FC = () => {
                   ) : (
                     <div>
                       <div className="flex items-center justify-center mb-6">
-                        {user?.image &&  <Image
-                          width={96}
-                          height={96}
-                          src={user?.image as string}
-                          alt="User Avatar"
-                          className="object-cover w-24 h-24 rounded-full shadow-md"
-                        />}
+                        {user?.image && (
+                          <Image
+                            width={96}
+                            height={96}
+                            src={user?.image as string}
+                            alt="User Avatar"
+                            className="object-cover w-24 h-24 rounded-full shadow-md"
+                          />
+                        )}
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-center">
@@ -386,7 +396,9 @@ const DashboardPage: React.FC = () => {
                           <FileText className="h-6 w-6 text-indigo-600 mr-4" />
                           <p className="text-gray-700">
                             <span className="font-semibold">User Type:</span>{" "}
-                            {user?.type && user.type.charAt(0).toUpperCase()+user.type.slice(1)}
+                            {user?.type &&
+                              user.type.charAt(0).toUpperCase() +
+                                user.type.slice(1)}
                           </p>
                         </div>
                         <Link
@@ -433,40 +445,141 @@ const DashboardPage: React.FC = () => {
                       You haven’t posted any jobs yet.
                     </p>
                   ) : (
-                    <div className="space-y-4">
-                      {jobs.map((job) => (
-                        <motion.div
-                          key={job.id as string}
-                          variants={itemVariants}
-                          className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
-                        >
-                          <Link
-                            href={`/dashboard/job/${job.id}`}
-                            className="cursor-pointer"
+                    <div>
+                      <div className="space-y-4">
+                        {jobs.map((job) => (
+                          <motion.div
+                            key={job.id as string}
+                            variants={itemVariants}
+                            className="border border-gray-200 rounded-md p-4 flex justify-between items-center"
                           >
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {job.title}
-                            </h3>
-                            <p className="text-gray-600">
-                              {job.company} - {job.location}
-                            </p>
-                            <p className="text-gray-500 text-sm">
-                              Contract: {job.contract}
-                            </p>
-                          </Link>
-                          <div className="flex space-x-2">
-                            <button
-                              title="delete"
-                              className="text-red-600 hover:text-red-800"
-                              onClick={() => handleJobDelete(job.id)}
+                            <Link
+                              href={`/dashboard/job/${job.id}`}
+                              className="cursor-pointer"
                             >
-                              <Trash2 className="h-5 w-5" />
-                            </button>
-                          </div>
-                        </motion.div>
-                      ))}
+                              <h3 className="text-lg font-semibold text-gray-800">
+                                {job.title}
+                              </h3>
+                              <p className="text-gray-600">
+                                {job.company} - {job.location}
+                              </p>
+                              <p className="text-gray-500 text-sm">
+                                Contract: {job.contract}
+                              </p>
+                            </Link>
+                            <div className="flex space-x-2">
+                              <button
+                                title="delete"
+                                className="text-red-600 hover:text-red-800"
+                                onClick={() => handleJobDelete(job.id)}
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                     
                     </div>
                   )}
+ <div className="flex flex-wrap items-center w-full justify-center">
+                        {totalJPages > 0 && (
+                          <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
+                            {/* Previous Button */}
+                            <div>
+                              <button
+                                onClick={() =>
+                                  setCurrentPage((prev) => prev - 1)
+                                }
+                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                                  currentPage === 1
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                } shadow-lg transition duration-300 transform`}
+                              >
+                                <ChevronLeft className="h-5 w-5 mr-2" />
+                                Previous
+                              </button>
+                            </div>
+
+                            {/* Page Numbers */}
+                            {currentPage > 3 && (
+                              <button
+                                onClick={() => setCurrentPage(1)}
+                                className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
+                   bg-white text-gray-700 hover:bg-gray-100'
+                } shadow-lg transition duration-300 transform`}
+                              >
+                                First Page
+                              </button>
+                            )}
+
+                            {currentPage > 3 && (
+                              <div
+                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                   shadow-lg transition duration-300 transform "
+                              >
+                                ...
+                              </div>
+                            )}
+                            {Array.from(
+                              { length: totalJPages },
+                              (_, i) => i + 1
+                            ).map((pageNum) => {
+                              return pageNum < currentPage + 5 ? (
+                                <div key={pageNum}>
+                                  {currentPage - pageNum > 2 || (
+                                    <button
+                                      onClick={() => setCurrentPage(pageNum)}
+                                      className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
+                                        pageNum === currentPage
+                                          ? "bg-indigo-600 text-white"
+                                          : "bg-white text-gray-700 hover:bg-gray-100"
+                                      } shadow-lg transition duration-300 transform`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                ""
+                              );
+                            })}
+                            {currentPage + 5 < totalJPages && (
+                              <div
+                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                      } shadow-lg transition duration-300 transform "
+                              >
+                                ...
+                              </div>
+                            )}
+
+                            {currentPage < totalJPages - 4 && (
+                              <button
+                                onClick={() => setCurrentPage(totalJPages)}
+                                className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
+                                              bg-white text-gray-700 hover:bg-gray-100'
+                                            } shadow-lg transition duration-300 transform`}
+                              >
+                                Last Page
+                              </button>
+                            )}
+                            {/* Next Button */}
+                            <div>
+                              <button
+                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                                  currentPage === totalJPages
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                } shadow-lg transition duration-300 transform`}
+                              >
+                                Next
+                                <ChevronRight className="h-5 w-5 ml-2" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                 </div>
               )}
 
@@ -549,29 +662,130 @@ const DashboardPage: React.FC = () => {
                       You haven’t applied to any jobs yet.
                     </p>
                   ) : (
-                    <div className="space-y-4">
-                      {filteredApplications.map((app) => (
-                        <motion.div
-                          key={app.id as string}
-                          variants={itemVariants}
-                          onClick={() => handleApplicationModal(app)}
-                          className="border border-gray-200 rounded-md p-4 cursor-pointer"
-                        >
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {app.job?.title}
-                          </h3>
-                          <p className="text-gray-600">{app?.job?.company}</p>
-                          <p className="text-gray-500 text-sm">
-                            Applied At:{" "}
-                            {new Date(app?.appliedAt)?.toLocaleString()}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            Status: {app?.status}
-                          </p>
-                        </motion.div>
-                      ))}
+                    <div>
+                      <div className="space-y-4">
+                        {applications.map((app) => (
+                          <motion.div
+                            key={app.id as string}
+                            variants={itemVariants}
+                            onClick={() => handleApplicationModal(app)}
+                            className="border border-gray-200 rounded-md p-4 cursor-pointer"
+                          >
+                            <h3 className="text-lg font-semibold text-gray-800">
+                              {app.job?.title}
+                            </h3>
+                            <p className="text-gray-600">{app?.job?.company}</p>
+                            <p className="text-gray-500 text-sm">
+                              Applied At:{" "}
+                              {new Date(app?.appliedAt)?.toLocaleString()}
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                              Status: {app?.status}
+                            </p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    
                     </div>
                   )}
+                    <div className="flex flex-wrap items-center w-full justify-center">
+                        {totalAPages > 0 && (
+                          <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
+                            {/* Previous Button */}
+                            <div>
+                              <button
+                                onClick={() =>
+                                  setCurrentPage((prev) => prev - 1)
+                                }
+                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                                  currentPage === 1
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                } shadow-lg transition duration-300 transform`}
+                              >
+                                <ChevronLeft className="h-5 w-5 mr-2" />
+                                Previous
+                              </button>
+                            </div>
+
+                            {/* Page Numbers */}
+                            {currentPage > 3 && (
+                              <button
+                                onClick={() => setCurrentPage(1)}
+                                className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
+                   bg-white text-gray-700 hover:bg-gray-100'
+                } shadow-lg transition duration-300 transform`}
+                              >
+                                First Page
+                              </button>
+                            )}
+
+                            {currentPage > 3 && (
+                              <div
+                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                   shadow-lg transition duration-300 transform "
+                              >
+                                ...
+                              </div>
+                            )}
+                            {Array.from(
+                              { length: totalAPages },
+                              (_, i) => i + 1
+                            ).map((pageNum) => {
+                              return pageNum < currentPage + 5 ? (
+                                <div key={pageNum}>
+                                  {currentPage - pageNum > 2 || (
+                                    <button
+                                      onClick={() => setCurrentPage(pageNum)}
+                                      className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
+                                        pageNum === currentPage
+                                          ? "bg-indigo-600 text-white"
+                                          : "bg-white text-gray-700 hover:bg-gray-100"
+                                      } shadow-lg transition duration-300 transform`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                ""
+                              );
+                            })}
+                            {currentPage + 5 < totalAPages && (
+                              <div
+                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                      } shadow-lg transition duration-300 transform "
+                              >
+                                ...
+                              </div>
+                            )}
+
+                            {currentPage < totalAPages - 4 && (
+                              <button
+                                onClick={() => setCurrentPage(totalAPages)}
+                                className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
+                                              bg-white text-gray-700 hover:bg-gray-100'
+                                            } shadow-lg transition duration-300 transform`}
+                              >
+                                Last Page
+                              </button>
+                            )}
+                            {/* Next Button */}
+                            <div>
+                              <button
+                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                                  currentPage === totalAPages
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                } shadow-lg transition duration-300 transform`}
+                              >
+                                Next
+                                <ChevronRight className="h-5 w-5 ml-2" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                 </div>
               )}
             </motion.div>

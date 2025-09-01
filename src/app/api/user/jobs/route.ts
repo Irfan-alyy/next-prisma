@@ -39,12 +39,12 @@ export async function GET(req:NextRequest){
         where: { postedById: session.user.id },
         skip:
           page && pageSize
-            ? parseInt(page as string) * parseInt(pageSize as string)
+            ? (parseInt(page as string)-1) * parseInt(pageSize as string)
             : 0,
         take: pageSize ? parseInt(pageSize) : undefined,
       });
     }
-    return NextResponse.json({ jobs , totalPages:count/parseInt(pageSize as string)|| 1}, { status: 200 });
+    return NextResponse.json({ jobs , totalPages:Math.ceil(count/parseInt(pageSize as string)|| 1)}, { status: 200 });
   } catch (error: unknown) {
     console.log(
       error.message ? error.message : "Error occure during fetching jobs"

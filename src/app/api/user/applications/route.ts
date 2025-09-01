@@ -78,7 +78,7 @@ export async function GET(req:NextRequest) {
         take: pageSize ? parseInt(pageSize) : undefined,
       });
     }
-    return NextResponse.json({ applications }, { status: 200 });
+    return NextResponse.json({ applications , totalPages: Math.ceil(count/parseInt(pageSize as string)) }, { status: 200 });
   } catch (error: unknown) {
     console.log(
       error.message
