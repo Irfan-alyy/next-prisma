@@ -295,7 +295,7 @@ const DashboardPage: React.FC = () => {
               >
                 Profile
               </button>
-              {session?.user?.type == "employer" && (
+              {session?.user?.type == "employer"  || session?.user?.type == "admin" && (
                 <button
                   onClick={() => handleTabChange("job")}
                   className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
@@ -307,7 +307,7 @@ const DashboardPage: React.FC = () => {
                   My Jobs
                 </button>
               )}
-              {session?.user?.type == "candidate" && (
+              {session?.user?.type == "candidate" || session?.user?.type == "admin"  && (
                 <button
                   onClick={() => handleTabChange("application")}
                   className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
@@ -375,7 +375,7 @@ const DashboardPage: React.FC = () => {
                           <FileText className="h-6 w-6 text-indigo-600 mr-4" />
                           <p className="text-gray-700">
                             <span className="font-semibold">User Type:</span>{" "}
-                            {user?.type}
+                            {user?.type && user.type.charAt(0).toUpperCase()+user.type.slice(1)}
                           </p>
                         </div>
                         <Link
