@@ -23,7 +23,9 @@ export async function GET(req:NextRequest){
   }
   try {
     let jobs;
+    let count
     if (session.user.type === "admin") {
+      count=await prisma.job.count()
       jobs = await prisma.job.findMany({
         skip:
           page && pageSize
@@ -32,6 +34,7 @@ export async function GET(req:NextRequest){
         take: pageSize ? parseInt(pageSize) : undefined,
       });
     } else {
+      count= await prisma.job.count({ where: { postedById: session.user.id }})
       jobs = await prisma.job.findMany({
         where: { postedById: session.user.id },
         skip:
@@ -41,7 +44,7 @@ export async function GET(req:NextRequest){
         take: pageSize ? parseInt(pageSize) : undefined,
       });
     }
-    return NextResponse.json({ jobs }, { status: 200 });
+    return NextResponse.json({ jobs , totalPages:count/parseInt(pageSize as string)|| 1}, { status: 200 });
   } catch (error: unknown) {
     console.log(
       error.message ? error.message : "Error occure during fetching jobs"

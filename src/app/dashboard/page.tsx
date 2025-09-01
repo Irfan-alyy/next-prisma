@@ -72,6 +72,9 @@ const DashboardPage: React.FC = () => {
   const [filteredApplications, setFilteredApplications] = useState<
     Application[]
   >([]);
+  const [currentPage,setCurrentPage]=useState<number>(1)
+  const [pageSize,setPageSize]=useState<number>(10)
+  const [totalPages,setTotalPages]=useState<number>()
   useEffect(() => {
     try {
       setLoading(true);
@@ -108,21 +111,29 @@ const DashboardPage: React.FC = () => {
 
   const fetchApplications = () => {
     setLoading(true);
-    fetch("/api/user/applications")
+    fetch(`/api/user/applications?page=${currentPage}&pageSize=${pageSize}`)
       .then((res) => res.json())
       .then((data) => {
         setApplications(data?.applications);
         setFilteredApplications(data?.applications);
+        setTotalPages(data?.totalPages)
       })
       .finally(() => setLoading(false));
   };
   const fetchJobs = () => {
     setLoading(true);
-    fetch("/api/user/jobs")
+    fetch(`/api/user/jobs?page=${currentPage}&pageSize=${pageSize}`)
       .then((res) => res.json())
-      .then((data) => setJobs(data?.jobs))
+      .then((data) => {
+        setJobs(data?.jobs)
+        setTotalPages(data?.totalPages)
+      })
       .finally(() => setLoading(false));
   };
+  useEffect(()=>{
+    activeTab==="jobs"? fetchJobs(): fetchApplications()
+  },[currentPage,pageSize])
+
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
