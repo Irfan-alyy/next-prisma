@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req:NextRequest) {
   const session = await auth();
   //   console.log(session);
   if (!session?.user?.id) {
@@ -11,9 +11,15 @@ export async function GET() {
       { status: 401 }
     );
   }
+  const params= req.nextUrl.searchParams
+  const page= params.get("page")
+  const pageSize=params.get("pageSize")
+  console.log(page,pageSize);
   try {
     let applications;
+    let count
     if (session.user.type === "admin") {
+      count= await prisma.application.count()
       applications = await prisma.application.findMany({
         select: {
           id: true,
@@ -35,8 +41,14 @@ export async function GET() {
             },
           },
         },
+        skip:
+          page && pageSize
+            ? (parseInt(page as string)-1 ) * parseInt(pageSize as string)
+            : 0,
+        take: pageSize ? parseInt(pageSize) : undefined,
       });
     } else {
+      count= await prisma.application.count({where: { userId: session.user.id }})
       applications = await prisma.application.findMany({
         where: { userId: session.user.id },
         select: {
@@ -59,6 +71,11 @@ export async function GET() {
             },
           },
         },
+        skip:
+          page && pageSize
+            ? (parseInt(page as string)-1 ) * parseInt(pageSize as string)
+            : 0,
+        take: pageSize ? parseInt(pageSize) : undefined,
       });
     }
     return NextResponse.json({ applications }, { status: 200 });
