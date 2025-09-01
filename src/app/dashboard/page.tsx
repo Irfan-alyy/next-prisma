@@ -80,7 +80,8 @@ const DashboardPage: React.FC = () => {
   const [filteredApplications, setFilteredApplications] = useState<
     Application[]
   >([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentJPage, setCurrentJPage] = useState<number>(1);
+  const [currentAPage, setCurrentAPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalJPages, setTotalJPages] = useState<number>(1);
   const [totalAPages,setTotalAPages]=useState<number>(1)
@@ -123,7 +124,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchApplications = () => {
     setLoading(true);
-    fetch(`/api/user/applications?page=${currentPage}&pageSize=${pageSize}`)
+    fetch(`/api/user/applications?page=${currentAPage}&pageSize=${pageSize}&type=${selectedFilter}`)
       .then((res) => res.json())
       .then((data) => {
         setApplications(data?.applications);
@@ -134,7 +135,7 @@ const DashboardPage: React.FC = () => {
   };
   const fetchJobs = () => {
     setLoading(true);
-    fetch(`/api/user/jobs?page=${currentPage}&pageSize=${pageSize}`)
+    fetch(`/api/user/jobs?page=${currentJPage}&pageSize=${pageSize}`)
       .then((res) => res.json())
       .then((data) => {
         setJobs(data?.jobs);
@@ -144,20 +145,23 @@ const DashboardPage: React.FC = () => {
   };
   useEffect(() => {
     activeTab === "jobs" && fetchJobs();
+  }, [currentJPage, pageSize]);
+ useEffect(() => {
     activeTab == "applications" && fetchApplications();
-  }, [currentPage, pageSize]);
+  }, [currentAPage, selectedFilter ,pageSize]);
+
 
 
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
-        setCurrentPage(1);
+        setCurrentJPage(1);
         !!(jobs && jobs.length > 0) || fetchJobs();
         setActiveTab("jobs");
         break;
       case "application":
-        setCurrentPage(1);
+        setCurrentAPage(1);
         !!(applications && applications.length > 0) || fetchApplications();
         setActiveTab("applications");
         break;
@@ -489,10 +493,10 @@ const DashboardPage: React.FC = () => {
                             <div>
                               <button
                                 onClick={() =>
-                                  setCurrentPage((prev) => prev - 1)
+                                  setCurrentJPage((prev) => prev - 1)
                                 }
                                 className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentPage === 1
+                                  currentJPage === 1
                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     : "bg-indigo-600 text-white hover:bg-indigo-700"
                                 } shadow-lg transition duration-300 transform`}
@@ -503,9 +507,9 @@ const DashboardPage: React.FC = () => {
                             </div>
 
                             {/* Page Numbers */}
-                            {currentPage > 3 && (
+                            {currentJPage > 3 && (
                               <button
-                                onClick={() => setCurrentPage(1)}
+                                onClick={() => setCurrentJPage(1)}
                                 className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
@@ -514,7 +518,7 @@ const DashboardPage: React.FC = () => {
                               </button>
                             )}
 
-                            {currentPage > 3 && (
+                            {currentJPage > 3 && (
                               <div
                                 className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                    shadow-lg transition duration-300 transform "
@@ -526,13 +530,13 @@ const DashboardPage: React.FC = () => {
                               { length: totalJPages },
                               (_, i) => i + 1
                             ).map((pageNum) => {
-                              return pageNum < currentPage + 5 ? (
+                              return pageNum < currentJPage + 5 ? (
                                 <div key={pageNum}>
-                                  {currentPage - pageNum > 2 || (
+                                  {currentJPage - pageNum > 2 || (
                                     <button
-                                      onClick={() => setCurrentPage(pageNum)}
+                                      onClick={() => setCurrentJPage(pageNum)}
                                       className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
-                                        pageNum === currentPage
+                                        pageNum === currentJPage
                                           ? "bg-indigo-600 text-white"
                                           : "bg-white text-gray-700 hover:bg-gray-100"
                                       } shadow-lg transition duration-300 transform`}
@@ -545,7 +549,7 @@ const DashboardPage: React.FC = () => {
                                 ""
                               );
                             })}
-                            {currentPage + 5 < totalJPages && (
+                            {currentJPage + 5 < totalJPages && (
                               <div
                                 className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                       } shadow-lg transition duration-300 transform "
@@ -554,9 +558,9 @@ const DashboardPage: React.FC = () => {
                               </div>
                             )}
 
-                            {currentPage < totalJPages - 4 && (
+                            {currentJPage < totalJPages - 4 && (
                               <button
-                                onClick={() => setCurrentPage(totalJPages)}
+                                onClick={() => setCurrentJPage(totalJPages)}
                                 className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
                                               bg-white text-gray-700 hover:bg-gray-100'
                                             } shadow-lg transition duration-300 transform`}
@@ -568,7 +572,7 @@ const DashboardPage: React.FC = () => {
                             <div>
                               <button
                                 className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentPage === totalJPages
+                                  currentJPage === totalJPages
                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     : "bg-indigo-600 text-white hover:bg-indigo-700"
                                 } shadow-lg transition duration-300 transform`}
@@ -590,7 +594,6 @@ const DashboardPage: React.FC = () => {
                       Your Applications
                     </h2>
                     <div>
-                      {applications?.length > 0 && (
                         <div className="flex gap-5 w-full justify-evenly text-black">
                           <button
                             onClick={() => {
@@ -641,7 +644,6 @@ const DashboardPage: React.FC = () => {
                             Rejected
                           </button>
                         </div>
-                      )}
                     </div>
                   </div>
                   {loading ? (
@@ -695,10 +697,10 @@ const DashboardPage: React.FC = () => {
                             <div>
                               <button
                                 onClick={() =>
-                                  setCurrentPage((prev) => prev - 1)
+                                  setCurrentAPage((prev) => prev - 1)
                                 }
                                 className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentPage === 1
+                                  currentAPage === 1
                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     : "bg-indigo-600 text-white hover:bg-indigo-700"
                                 } shadow-lg transition duration-300 transform`}
@@ -709,9 +711,9 @@ const DashboardPage: React.FC = () => {
                             </div>
 
                             {/* Page Numbers */}
-                            {currentPage > 3 && (
+                            {currentAPage > 3 && (
                               <button
-                                onClick={() => setCurrentPage(1)}
+                                onClick={() => setCurrentAPage(1)}
                                 className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
@@ -720,7 +722,7 @@ const DashboardPage: React.FC = () => {
                               </button>
                             )}
 
-                            {currentPage > 3 && (
+                            {currentAPage > 3 && (
                               <div
                                 className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                    shadow-lg transition duration-300 transform "
@@ -732,13 +734,13 @@ const DashboardPage: React.FC = () => {
                               { length: totalAPages },
                               (_, i) => i + 1
                             ).map((pageNum) => {
-                              return pageNum < currentPage + 5 ? (
+                              return pageNum < currentAPage + 5 ? (
                                 <div key={pageNum}>
-                                  {currentPage - pageNum > 2 || (
+                                  {currentAPage - pageNum > 2 || (
                                     <button
-                                      onClick={() => setCurrentPage(pageNum)}
+                                      onClick={() => setCurrentAPage(pageNum)}
                                       className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
-                                        pageNum === currentPage
+                                        pageNum === currentAPage
                                           ? "bg-indigo-600 text-white"
                                           : "bg-white text-gray-700 hover:bg-gray-100"
                                       } shadow-lg transition duration-300 transform`}
@@ -751,7 +753,7 @@ const DashboardPage: React.FC = () => {
                                 ""
                               );
                             })}
-                            {currentPage + 5 < totalAPages && (
+                            {currentAPage + 5 < totalAPages && (
                               <div
                                 className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                       } shadow-lg transition duration-300 transform "
@@ -760,9 +762,9 @@ const DashboardPage: React.FC = () => {
                               </div>
                             )}
 
-                            {currentPage < totalAPages - 4 && (
+                            {currentAPage < totalAPages - 4 && (
                               <button
-                                onClick={() => setCurrentPage(totalAPages)}
+                                onClick={() => setCurrentAPage(totalAPages)}
                                 className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
                                               bg-white text-gray-700 hover:bg-gray-100'
                                             } shadow-lg transition duration-300 transform`}
@@ -774,7 +776,7 @@ const DashboardPage: React.FC = () => {
                             <div>
                               <button
                                 className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentPage === totalAPages
+                                  currentAPage === totalAPages
                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     : "bg-indigo-600 text-white hover:bg-indigo-700"
                                 } shadow-lg transition duration-300 transform`}
