@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import DetailsModal from "@/components/DetailsModal";
 import Image from "next/image";
 import LoadingSpinner from "@/components/spinners";
-
+import { Application, Job } from "@/lib/types";
 interface User {
   createdAt: Date;
   email: string;
@@ -18,28 +18,7 @@ interface User {
   image: string;
   name: string;
   updatedAt: Date;
-}
-
-interface Job {
-  id: string;
-  title: string;
-  description: string;
-  salary: string;
-  postedAt: Date;
-  company: string;
-  location: string;
-  contract: string;
-  postedById: string;
-}
-interface Application {
-  id: string;
-  description: string;
-  appliedAt: Date;
-  status: "PENDING" | "ACCEPTED" | "REJECTED";
-  jobId: string;
-  userId: string;
-  resume: string;
-  job: Job;
+  type:string;
 }
 
 // Animation variants
@@ -101,7 +80,7 @@ const DashboardPage: React.FC = () => {
         .then((data) => setUser(data?.user))
         .finally(() => setLoading(false));
     } catch (error: unknown) {
-      console.log("Error occured in fetching user data", error?.message);
+      console.log("Error occured in fetching user data", (error as any)?.message);
     }
   }, []);
 
@@ -369,13 +348,13 @@ const DashboardPage: React.FC = () => {
                   ) : (
                     <div>
                       <div className="flex items-center justify-center mb-6">
-                        <Image
+                        {user?.image &&  <Image
                           width={96}
                           height={96}
                           src={user?.image as string}
                           alt="User Avatar"
                           className="object-cover w-24 h-24 rounded-full shadow-md"
-                        />
+                        />}
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-center">
@@ -390,6 +369,13 @@ const DashboardPage: React.FC = () => {
                           <p className="text-gray-700">
                             <span className="font-semibold">Email:</span>{" "}
                             {user?.email}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <FileText className="h-6 w-6 text-indigo-600 mr-4" />
+                          <p className="text-gray-700">
+                            <span className="font-semibold">User Type:</span>{" "}
+                            {user?.type}
                           </p>
                         </div>
                         <Link

@@ -24,6 +24,7 @@ export interface User{
     image?:string;
     createdAt: Date;
     udaptedAt:Date;
+    type:string;
     jobs:Partial<Job>
 }
 
