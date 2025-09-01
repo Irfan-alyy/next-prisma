@@ -91,6 +91,8 @@ const LoadingSpinner = ({
   );
 };
 
+
+export default LoadingSpinner
 // // Demo component to showcase all variants
 // const LoadingDemo = () => {
 //   const [activeVariant, setActiveVariant] = useState('spinner');

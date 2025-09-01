@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import {UserCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import LoadingSpinner from './spinners';
 
 const dropdownVariants: Variants = {
   hidden: { opacity: 0, y: -10 },
@@ -33,7 +34,6 @@ const Navbar: React.FC = () => {
               JobBoard
             </Link>
           </div>
-
           {/* Desktop Menu Items */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link href="/jobs" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
