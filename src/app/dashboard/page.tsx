@@ -8,6 +8,7 @@ import { motion, Variants } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import DetailsModal from "@/components/DetailsModal";
 import Image from "next/image";
+import LoadingSpinner from "@/components/spinners";
 
 interface User {
   createdAt: Date;
@@ -359,7 +360,11 @@ const DashboardPage: React.FC = () => {
                       transition={{ duration: 0.5 }}
                       className=" text-lg font-semibold text-black text-center"
                     >
-                      Loading...
+                      <LoadingSpinner
+                        variant="bars"
+                        size="small"
+                        className="text-indigo-600"
+                      />
                     </motion.div>
                   ) : (
                     <div>
@@ -420,7 +425,11 @@ const DashboardPage: React.FC = () => {
                       transition={{ duration: 0.5 }}
                       className="text-lg font-semibold text-black text-center"
                     >
-                      Loading...
+                      <LoadingSpinner
+                        variant="bars"
+                        size="small"
+                        className="text-indigo-600"
+                      />
                     </motion.div>
                   ) : jobs?.length === 0 ? (
                     <p className="text-gray-600 text-center">
@@ -467,63 +476,63 @@ const DashboardPage: React.FC = () => {
               {activeTab === "applications" && (
                 <div className="space-y-6">
                   <div className="flex justify-between">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-                    Your Applications
-                  </h2>
-                  <div>
-                    {applications?.length > 0 && (
-                      <div className="flex gap-5 w-full justify-evenly text-black">
-                        <button
-                          onClick={() => {
-                            setSelectedFilter("all");
-                          }}
-                          className={`inline-flex items-center justify-center w-25 py-2 ${
-                            selectedFilter == "all"
-                              ? "bg-indigo-600 text-white"
-                              : "text-black"
-                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                        >
-                          All
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedFilter("accepted");
-                          }}
-                          className={`inline-flex items-center justify-center w-25 py-2 ${
-                            selectedFilter == "accepted"
-                              ? "bg-indigo-600 text-white"
-                              : "text-black"
-                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                        >
-                          Accepted
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedFilter("pending");
-                          }}
-                          className={`inline-flex items-center justify-center w-25 py-2 ${
-                            selectedFilter == "pending"
-                              ? "bg-indigo-600 text-white"
-                              : "text-black"
-                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                        >
-                          Pending
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedFilter("rejected");
-                          }}
-                          className={`inline-flex items-center justify-center w-25 py-2  ${
-                            selectedFilter == "rejected"
-                              ? "bg-indigo-600 text-white"
-                              : "text-black"
-                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                        >
-                          Rejected
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+                      Your Applications
+                    </h2>
+                    <div>
+                      {applications?.length > 0 && (
+                        <div className="flex gap-5 w-full justify-evenly text-black">
+                          <button
+                            onClick={() => {
+                              setSelectedFilter("all");
+                            }}
+                            className={`inline-flex items-center justify-center w-25 py-2 ${
+                              selectedFilter == "all"
+                                ? "bg-indigo-600 text-white"
+                                : "text-black"
+                            }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                          >
+                            All
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedFilter("accepted");
+                            }}
+                            className={`inline-flex items-center justify-center w-25 py-2 ${
+                              selectedFilter == "accepted"
+                                ? "bg-indigo-600 text-white"
+                                : "text-black"
+                            } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                          >
+                            Accepted
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedFilter("pending");
+                            }}
+                            className={`inline-flex items-center justify-center w-25 py-2 ${
+                              selectedFilter == "pending"
+                                ? "bg-indigo-600 text-white"
+                                : "text-black"
+                            } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                          >
+                            Pending
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedFilter("rejected");
+                            }}
+                            className={`inline-flex items-center justify-center w-25 py-2  ${
+                              selectedFilter == "rejected"
+                                ? "bg-indigo-600 text-white"
+                                : "text-black"
+                            }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                          >
+                            Rejected
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {loading ? (
                     <motion.div
@@ -532,7 +541,11 @@ const DashboardPage: React.FC = () => {
                       transition={{ duration: 0.5 }}
                       className="text-black text-lg font-semibold text-center"
                     >
-                      Loading...
+                      <LoadingSpinner
+                        variant="bars"
+                        size="small"
+                        className="text-indigo-600"
+                      />
                     </motion.div>
                   ) : applications?.length === 0 ? (
                     <p className="text-gray-600 text-center">

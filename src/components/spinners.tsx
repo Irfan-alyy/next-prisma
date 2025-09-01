@@ -111,12 +111,12 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       },
       customComponent: (
         <div style={{ display: 'flex', alignItems: 'center', height: iconSize, gap: iconSize / 8 }}>
-          {[0, 1, 2].map((i) => (
+          {[0, 1, 2, 3].map((i) => (
             <motion.div
               key={i}
               style={{
                 width: iconSize / 4,
-                height: iconSize,
+                height: iconSize/1.5,
                 backgroundColor: color,
                 borderRadius: 2
               }}
