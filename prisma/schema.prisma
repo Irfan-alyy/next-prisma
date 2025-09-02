@@ -77,7 +77,7 @@ model Job {
   id           String        @id @default(cuid())
   title        String
   description  String
-  salary       Decimal?      @db.Decimal
+  salary       Float
   postedAt     DateTime      @default(now())
   company      String
   location     String        @default("Remote")

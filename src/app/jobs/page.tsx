@@ -32,6 +32,9 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
   const JobsPerPage = 9;
   const {jobs, totalJobs}= await getJobs(params, currentPage,JobsPerPage)
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
+  const queryObj = Object.fromEntries(Object.entries(searchParams));
+  console.log(queryObj,"query object");
+  
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
       <main>
@@ -135,7 +138,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
                   <Link
                     href={{
                       pathname: '/jobs',
-                      query: { search, page: currentPage > 1 ? currentPage - 1 : 1 },
+                      query: { ...queryObj, page: currentPage > 1 ? currentPage - 1 : 1 },
                     }}
                     className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${currentPage === 1
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -152,7 +155,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
                   <Link
                     href={{
                       pathname: '/jobs',
-                      query: { search, page: 1 },
+                      query: { ...queryObj, page: 1 },
                     }}
                     className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
@@ -172,7 +175,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
                       <Link
                         href={{
                           pathname: '/jobs',
-                          query: { search, page: pageNum },
+                          query: { ...queryObj, search, page: pageNum },
                         }}
                         className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${pageNum === currentPage
                             ? 'bg-indigo-600 text-white'
@@ -190,7 +193,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
                   <Link
                     href={{
                       pathname: '/jobs',
-                      query: { search, page: totalPages },
+                      query: { ...queryObj, page: totalPages },
                     }}
                     className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
@@ -203,7 +206,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
                   <Link
                     href={{
                       pathname: '/jobs',
-                      query: { search, page: currentPage < totalPages ? currentPage + 1 : totalPages },
+                      query: { ...queryObj ,page: currentPage < totalPages ? currentPage + 1 : totalPages },
                     }}
                     className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${currentPage === totalPages
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
