@@ -84,7 +84,7 @@ const DashboardPage: React.FC = () => {
   const [currentAPage, setCurrentAPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalJPages, setTotalJPages] = useState<number>(1);
-  const [totalAPages,setTotalAPages]=useState<number>(1)
+  const [totalAPages, setTotalAPages] = useState<number>(1);
   useEffect(() => {
     try {
       setLoading(true);
@@ -124,7 +124,9 @@ const DashboardPage: React.FC = () => {
 
   const fetchApplications = () => {
     setLoading(true);
-    fetch(`/api/user/applications?page=${currentAPage}&pageSize=${pageSize}&type=${selectedFilter}`)
+    fetch(
+      `/api/user/applications?page=${currentAPage}&pageSize=${pageSize}&type=${selectedFilter}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setApplications(data?.applications);
@@ -146,12 +148,9 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     activeTab === "jobs" && fetchJobs();
   }, [currentJPage, pageSize]);
- useEffect(() => {
+  useEffect(() => {
     activeTab == "applications" && fetchApplications();
-  }, [currentAPage, selectedFilter ,pageSize]);
-
-
-
+  }, [currentAPage, selectedFilter, pageSize]);
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
@@ -326,7 +325,7 @@ const DashboardPage: React.FC = () => {
                       : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  My Jobs
+                  {session?.user?.type == "admin" ? "All Jobs" : "My Jobs"}
                 </button>
               )}
               {(session?.user?.type == "candidate" ||
@@ -339,7 +338,9 @@ const DashboardPage: React.FC = () => {
                       : "bg-white text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  My Applications
+                  {session?.user?.type == "admin"
+                    ? "All Applications"
+                    : "My Applications"}
                 </button>
               )}
             </div>
@@ -422,14 +423,18 @@ const DashboardPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="flex justify-between items-center w-full">
                     <h2 className="text-3xl font-bold text-gray-800 text-center">
-                      Your Job Listings
+                      {session?.user?.type == "admin"
+                        ? "All Jobs"
+                        : "Your Job Listings"}
                     </h2>
-                    <Link
-                      href="/post-job"
-                      className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
-                    >
-                      Post New Job
-                    </Link>
+                    {session.user.type == "employer" && (
+                      <Link
+                        href="/post-job"
+                        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition duration-300"
+                      >
+                        Post New Job
+                      </Link>
+                    )}
                   </div>
                   {loading ? (
                     <motion.div
@@ -483,107 +488,104 @@ const DashboardPage: React.FC = () => {
                           </motion.div>
                         ))}
                       </div>
-                     
                     </div>
                   )}
- <div className="flex flex-wrap items-center w-full justify-center">
-                        {totalJPages > 0 && (
-                          <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
-                            {/* Previous Button */}
-                            <div>
-                              <button
-                                onClick={() =>
-                                  setCurrentJPage((prev) => prev - 1)
-                                }
-                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentJPage === 1
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                } shadow-lg transition duration-300 transform`}
-                              >
-                                <ChevronLeft className="h-5 w-5 mr-2" />
-                                Previous
-                              </button>
-                            </div>
+                  <div className="flex flex-wrap items-center w-full justify-center">
+                    {totalJPages > 0 && (
+                      <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
+                        {/* Previous Button */}
+                        <div>
+                          <button
+                            onClick={() => setCurrentJPage((prev) => prev - 1)}
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentJPage === 1
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            <ChevronLeft className="h-5 w-5 mr-2" />
+                            Previous
+                          </button>
+                        </div>
 
-                            {/* Page Numbers */}
-                            {currentJPage > 3 && (
-                              <button
-                                onClick={() => setCurrentJPage(1)}
-                                className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
+                        {/* Page Numbers */}
+                        {currentJPage > 3 && (
+                          <button
+                            onClick={() => setCurrentJPage(1)}
+                            className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
-                              >
-                                First Page
-                              </button>
-                            )}
+                          >
+                            First Page
+                          </button>
+                        )}
 
-                            {currentJPage > 3 && (
-                              <div
-                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                        {currentJPage > 3 && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                    shadow-lg transition duration-300 transform "
-                              >
-                                ...
-                              </div>
-                            )}
-                            {Array.from(
-                              { length: totalJPages },
-                              (_, i) => i + 1
-                            ).map((pageNum) => {
-                              return pageNum < currentJPage + 5 ? (
-                                <div key={pageNum}>
-                                  {currentJPage - pageNum > 2 || (
-                                    <button
-                                      onClick={() => setCurrentJPage(pageNum)}
-                                      className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
-                                        pageNum === currentJPage
-                                          ? "bg-indigo-600 text-white"
-                                          : "bg-white text-gray-700 hover:bg-gray-100"
-                                      } shadow-lg transition duration-300 transform`}
-                                    >
-                                      {pageNum}
-                                    </button>
-                                  )}
-                                </div>
-                              ) : (
-                                ""
-                              );
-                            })}
-                            {currentJPage + 5 < totalJPages && (
-                              <div
-                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
-                      } shadow-lg transition duration-300 transform "
-                              >
-                                ...
-                              </div>
-                            )}
-
-                            {currentJPage < totalJPages - 4 && (
-                              <button
-                                onClick={() => setCurrentJPage(totalJPages)}
-                                className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
-                                              bg-white text-gray-700 hover:bg-gray-100'
-                                            } shadow-lg transition duration-300 transform`}
-                              >
-                                Last Page
-                              </button>
-                            )}
-                            {/* Next Button */}
-                            <div>
-                              <button
-                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentJPage === totalJPages
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                } shadow-lg transition duration-300 transform`}
-                              >
-                                Next
-                                <ChevronRight className="h-5 w-5 ml-2" />
-                              </button>
-                            </div>
+                          >
+                            ...
                           </div>
                         )}
+                        {Array.from(
+                          { length: totalJPages },
+                          (_, i) => i + 1
+                        ).map((pageNum) => {
+                          return pageNum < currentJPage + 5 ? (
+                            <div key={pageNum}>
+                              {currentJPage - pageNum > 2 || (
+                                <button
+                                  onClick={() => setCurrentJPage(pageNum)}
+                                  className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
+                                    pageNum === currentJPage
+                                      ? "bg-indigo-600 text-white"
+                                      : "bg-white text-gray-700 hover:bg-gray-100"
+                                  } shadow-lg transition duration-300 transform`}
+                                >
+                                  {pageNum}
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            ""
+                          );
+                        })}
+                        {currentJPage + 5 < totalJPages && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                      } shadow-lg transition duration-300 transform "
+                          >
+                            ...
+                          </div>
+                        )}
+
+                        {currentJPage < totalJPages - 4 && (
+                          <button
+                            onClick={() => setCurrentJPage(totalJPages)}
+                            className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
+                                              bg-white text-gray-700 hover:bg-gray-100'
+                                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Last Page
+                          </button>
+                        )}
+                        {/* Next Button */}
+                        <div>
+                          <button
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentJPage === totalJPages
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Next
+                            <ChevronRight className="h-5 w-5 ml-2" />
+                          </button>
+                        </div>
                       </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -591,63 +593,65 @@ const DashboardPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="flex justify-between">
                     <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-                      Your Applications
+                      {session.user.type === "admin"
+                        ? "All Users Applications"
+                        : "Your Applications"}
                     </h2>
                     <div>
-                        <div className="flex gap-5 w-full justify-evenly text-black">
-                          <button
-                            onClick={() => {
-                              setSelectedFilter("all");
-                              setCurrentAPage(1)
-                            }}
-                            className={`inline-flex items-center justify-center w-25 py-2 ${
-                              selectedFilter == "all"
-                                ? "bg-indigo-600 text-white"
-                                : "text-black"
-                            }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                          >
-                            All
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedFilter("accepted");
-                              setCurrentAPage(1)
-                            }}
-                            className={`inline-flex items-center justify-center w-25 py-2 ${
-                              selectedFilter == "accepted"
-                                ? "bg-indigo-600 text-white"
-                                : "text-black"
-                            } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                          >
-                            Accepted
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedFilter("pending");
-                              setCurrentAPage(1)
-                            }}
-                            className={`inline-flex items-center justify-center w-25 py-2 ${
-                              selectedFilter == "pending"
-                                ? "bg-indigo-600 text-white"
-                                : "text-black"
-                            } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                          >
-                            Pending
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedFilter("rejected");
-                              setCurrentAPage(1)
-                            }}
-                            className={`inline-flex items-center justify-center w-25 py-2  ${
-                              selectedFilter == "rejected"
-                                ? "bg-indigo-600 text-white"
-                                : "text-black"
-                            }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
-                          >
-                            Rejected
-                          </button>
-                        </div>
+                      <div className="flex gap-5 w-full justify-evenly text-black">
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("all");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "all"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          All
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("accepted");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "accepted"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Accepted
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("pending");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "pending"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Pending
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("rejected");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2  ${
+                            selectedFilter == "rejected"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Rejected
+                        </button>
+                      </div>
                     </div>
                   </div>
                   {loading ? (
@@ -665,7 +669,9 @@ const DashboardPage: React.FC = () => {
                     </motion.div>
                   ) : applications?.length === 0 ? (
                     <p className="text-gray-600 text-center">
-                      You haven’t applied to any jobs yet.
+                      {session.user.type == "admin"
+                        ? "No applications found"
+                        : "You haven’t applied to any jobs yet."}
                     </p>
                   ) : (
                     <div>
@@ -691,107 +697,104 @@ const DashboardPage: React.FC = () => {
                           </motion.div>
                         ))}
                       </div>
-                    
                     </div>
                   )}
-                    <div className="flex flex-wrap items-center w-full justify-center">
-                        {totalAPages > 0 && (
-                          <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
-                            {/* Previous Button */}
-                            <div>
-                              <button
-                                onClick={() =>
-                                  setCurrentAPage((prev) => prev - 1)
-                                }
-                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentAPage === 1
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                } shadow-lg transition duration-300 transform`}
-                              >
-                                <ChevronLeft className="h-5 w-5 mr-2" />
-                                Previous
-                              </button>
-                            </div>
+                  <div className="flex flex-wrap items-center w-full justify-center">
+                    {totalAPages > 0 && (
+                      <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
+                        {/* Previous Button */}
+                        <div>
+                          <button
+                            onClick={() => setCurrentAPage((prev) => prev - 1)}
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentAPage === 1
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            <ChevronLeft className="h-5 w-5 mr-2" />
+                            Previous
+                          </button>
+                        </div>
 
-                            {/* Page Numbers */}
-                            {currentAPage > 3 && (
-                              <button
-                                onClick={() => setCurrentAPage(1)}
-                                className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
+                        {/* Page Numbers */}
+                        {currentAPage > 3 && (
+                          <button
+                            onClick={() => setCurrentAPage(1)}
+                            className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
                    bg-white text-gray-700 hover:bg-gray-100'
                 } shadow-lg transition duration-300 transform`}
-                              >
-                                First Page
-                              </button>
-                            )}
+                          >
+                            First Page
+                          </button>
+                        )}
 
-                            {currentAPage > 3 && (
-                              <div
-                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                        {currentAPage > 3 && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
                    shadow-lg transition duration-300 transform "
-                              >
-                                ...
-                              </div>
-                            )}
-                            {Array.from(
-                              { length: totalAPages },
-                              (_, i) => i + 1
-                            ).map((pageNum) => {
-                              return pageNum < currentAPage + 5 ? (
-                                <div key={pageNum}>
-                                  {currentAPage - pageNum > 2 || (
-                                    <button
-                                      onClick={() => setCurrentAPage(pageNum)}
-                                      className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
-                                        pageNum === currentAPage
-                                          ? "bg-indigo-600 text-white"
-                                          : "bg-white text-gray-700 hover:bg-gray-100"
-                                      } shadow-lg transition duration-300 transform`}
-                                    >
-                                      {pageNum}
-                                    </button>
-                                  )}
-                                </div>
-                              ) : (
-                                ""
-                              );
-                            })}
-                            {currentAPage + 5 < totalAPages && (
-                              <div
-                                className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
-                      } shadow-lg transition duration-300 transform "
-                              >
-                                ...
-                              </div>
-                            )}
-
-                            {currentAPage < totalAPages - 4 && (
-                              <button
-                                onClick={() => setCurrentAPage(totalAPages)}
-                                className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
-                                              bg-white text-gray-700 hover:bg-gray-100'
-                                            } shadow-lg transition duration-300 transform`}
-                              >
-                                Last Page
-                              </button>
-                            )}
-                            {/* Next Button */}
-                            <div>
-                              <button
-                                className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
-                                  currentAPage === totalAPages
-                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                } shadow-lg transition duration-300 transform`}
-                              >
-                                Next
-                                <ChevronRight className="h-5 w-5 ml-2" />
-                              </button>
-                            </div>
+                          >
+                            ...
                           </div>
                         )}
+                        {Array.from(
+                          { length: totalAPages },
+                          (_, i) => i + 1
+                        ).map((pageNum) => {
+                          return pageNum < currentAPage + 5 ? (
+                            <div key={pageNum}>
+                              {currentAPage - pageNum > 2 || (
+                                <button
+                                  onClick={() => setCurrentAPage(pageNum)}
+                                  className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
+                                    pageNum === currentAPage
+                                      ? "bg-indigo-600 text-white"
+                                      : "bg-white text-gray-700 hover:bg-gray-100"
+                                  } shadow-lg transition duration-300 transform`}
+                                >
+                                  {pageNum}
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            ""
+                          );
+                        })}
+                        {currentAPage + 5 < totalAPages && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                      } shadow-lg transition duration-300 transform "
+                          >
+                            ...
+                          </div>
+                        )}
+
+                        {currentAPage < totalAPages - 4 && (
+                          <button
+                            onClick={() => setCurrentAPage(totalAPages)}
+                            className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
+                                              bg-white text-gray-700 hover:bg-gray-100'
+                                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Last Page
+                          </button>
+                        )}
+                        {/* Next Button */}
+                        <div>
+                          <button
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentAPage === totalAPages
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Next
+                            <ChevronRight className="h-5 w-5 ml-2" />
+                          </button>
+                        </div>
                       </div>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.div>
