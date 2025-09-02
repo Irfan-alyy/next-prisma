@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft, FilterIcon } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import { Metadata } from 'next';
 import { getJobs } from '@/lib/jobs';
+import FilterModal from './filterModal';
 
 
 export const metadata: Metadata = {
@@ -9,13 +10,27 @@ export const metadata: Metadata = {
   description: 'Find Jobs That suits your skills and comfort',
 }
 // Animation variants for job cards
+export interface JobSearchParams{ 
+  search?: string
+   page?: string
+   salaryMin?:string
+   salaryMax?:string
+   location?:string
+   remote?:string
+   jobType?:string
+   experianceLevel?:string
+}
 
-const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: string, page: string }> }) => {
+
+
+const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParams> }) => {
   // Filter jobs based on search query (simplified for demo)
-  const { search, page } = await searchParams;
-  const currentPage = parseInt(page) || 1;
+  const params= await searchParams;
+  const search= params?.search
+  const page= params?.page
+  const currentPage = parseInt(page as string) || 1;
   const JobsPerPage = 9;
-  const {jobs, totalJobs}= await getJobs(search, currentPage,JobsPerPage)
+  const {jobs, totalJobs}= await getJobs(params, currentPage,JobsPerPage)
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
   return (
     <div className="min-h-screen bg-gray-50 font-inter">
@@ -30,7 +45,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
               <circle cx="50" cy="80" r="10" fill="currentColor" className="text-indigo-300"></circle>
             </svg>
           </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 animate-fade-in-up">
               Explore Job Opportunities
             </h1>
@@ -38,21 +53,21 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<{ search: stri
               Find the perfect job that matches your skills and career goals.
             </p>
             {/* Search Bar */}
-            <div className="max-w-3xl mx-auto">
-              <form className="relative">
+            <div className="flex justify-between w-full px-4 py-3 rounded-md shadow-sm text-gray-900 bg-white max-w-3xl mx-auto">
+              <form className="w-full relative">
                 <input
                   type="text"
                   name="search"
                   placeholder="Search jobs by title, company, or location..."
-                  className="w-full pl-10 pr-4 py-3 rounded-md shadow-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
+                  className=" w-full pl-10 focus:outline-none  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
                 />
                 <div className="absolute inset-y-0 left-0 px-3 flex items-center justify-between w-full pointer-events-none">
                   <button type='submit'>
                     <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </button>
-                  <FilterIcon className='z-100 cursor-pointer `right-10 text-black'/>
                 </div>
               </form>
+                  <FilterModal search={search?.toString() as string}/>
             </div>
           </div>
         </section>

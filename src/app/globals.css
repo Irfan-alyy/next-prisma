@@ -37,3 +37,9 @@ html, body {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none;
   }
+
+.scrollbar-hidden {
+  -webkit-scrollbar{ display: none; };
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

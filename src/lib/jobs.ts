@@ -1,19 +1,26 @@
-import {User, Job} from "@/lib/types"
+import { Job} from "@/lib/types"
 import prisma from "./prisma"
-export async function getJobs(search:string, currentPage:number,jobsPerPage:number){
+import { JobSearchParams } from "@/app/jobs/page"
+export async function getJobs(params:JobSearchParams, currentPage:number,jobsPerPage:number){
     let jobs:Array<Job>=[]
     let totalJobs:number=0
+    console.log(params);
+    
     try {
         let where = {}
-        if (search) {
+        if (params?.search) {
           where =
           {
             OR: [
-              { title: { contains: search, mode: 'insensitive' } },
-              { company: { contains: search, mode: 'insensitive' } },
-              { contract: { contains: search, mode: 'insensitive' } },
-              { location: { contains: search, mode: 'insensitive' } },
-            ]
+              { title: { contains: params?.search.toString(), mode: 'insensitive' } },
+              { company: { contains: params?.search.toString(), mode: 'insensitive' } },
+              { contract: { contains: params?.search.toString(), mode: 'insensitive' } },
+              { location: { contains: params?.search.toString(), mode: 'insensitive' } },
+            ],
+            salary:{
+              gt:params?.salaryMin?.toString(),
+              ls:params?.salaryMax?.toString()
+            }
           }
         }
         // console.log(where,"where");
