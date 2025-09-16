@@ -47,7 +47,7 @@ export async function GET(req:NextRequest){
     return NextResponse.json({ jobs , totalPages:Math.ceil(count/parseInt(pageSize as string)|| 1)}, { status: 200 });
   } catch (error: unknown) {
     console.log(
-      error.message ? error.message : "Error occure during fetching jobs"
+      error?.message ? error?.message : "Error occure during fetching jobs"
     );
     return NextResponse.json(error, { status: 500 });
   }
