@@ -77,12 +77,9 @@ const DashboardPage: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "accepted" | "pending" | "rejected"
   >("all");
-  const [filteredApplications, setFilteredApplications] = useState<
-    Application[]
-  >([]);
   const [currentJPage, setCurrentJPage] = useState<number>(1);
   const [currentAPage, setCurrentAPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const pageSize=10
   const [totalJPages, setTotalJPages] = useState<number>(1);
   const [totalAPages, setTotalAPages] = useState<number>(1);
   useEffect(() => {
@@ -95,7 +92,7 @@ const DashboardPage: React.FC = () => {
     } catch (error: unknown) {
       console.log(
         "Error occured in fetching user data",
-        (error as any)?.message
+        error?.message
       );
     }
   }, []);
@@ -130,7 +127,6 @@ const DashboardPage: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         setApplications(data?.applications);
-        setFilteredApplications(data?.applications);
         setTotalAPages(data?.totalPages);
       })
       .finally(() => setLoading(false));
@@ -146,10 +142,13 @@ const DashboardPage: React.FC = () => {
       .finally(() => setLoading(false));
   };
   useEffect(() => {
-    activeTab === "jobs" && fetchJobs();
-  }, [currentJPage, pageSize]);
+    if(activeTab === "jobs"){
+      fetchJobs();
+  }}, [currentJPage, pageSize]);
   useEffect(() => {
-    activeTab == "applications" && fetchApplications();
+    if(activeTab == "applications"){
+      fetchApplications();
+    } 
   }, [currentAPage, selectedFilter, pageSize]);
 
   const handleTabChange = (tab: string) => {
@@ -480,7 +479,7 @@ const DashboardPage: React.FC = () => {
                               <button
                                 title="delete"
                                 className="text-red-600 hover:text-red-800"
-                                onClick={() => handleJobDelete(job.id)}
+                                onClick={() => handleJobDelete(job.id as string)}
                               >
                                 <Trash2 className="h-5 w-5" />
                               </button>

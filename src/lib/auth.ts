@@ -23,7 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks:{
         async jwt({token,user}) {
             if(user){
-                token.id= user.id,
+                token.id= user.id
                 token.name=user.name
             }
             return token
@@ -39,7 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   session.user = {
                     ...session.user,
                     id: dbUser.id,
-                    type: dbUser.type,
+                    type: dbUser.type as string,
                     name:dbUser.name,
                     image:dbUser.image
                   };

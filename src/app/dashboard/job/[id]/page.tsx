@@ -8,7 +8,6 @@ import { motion, Variants } from 'framer-motion';
 import UpdateModal from '@/components/UpdateModal';
 import DetailsModal from '@/components/DetailsModal';
 import { Job, Application } from '@/lib/types';
-import { div } from 'framer-motion/client';
 // Animation variants
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -17,7 +16,7 @@ const cardVariants: Variants = {
 
 
 const JobDetailPage: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { data: session} = useSession();
   const params = useParams();
   const jobId = params.id as string;
   const router = useRouter()

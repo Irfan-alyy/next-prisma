@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import 'next-auth';
 
 declare module 'next-auth' {
   interface Session {
@@ -29,16 +29,16 @@ export interface User{
 }
 
 export interface Job {
-    id: string;
+    id?: string;
     title: string;
     description: string;
-    salary: string;
-    postedAt: string;
+    salary:  number;
+    postedAt?: string;
     company: string;
     location: string;
     contract: string;
     postedById: string;
-    postedBy: Partial<User>
+    postedBy?: Partial<User>
   }
   
 export interface Application {

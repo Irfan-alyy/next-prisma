@@ -3,10 +3,10 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 
-interface Params{ 
-  page?: string | undefined
-  pageSize?: string | undefined
-}
+// interface Params{ 
+//   page?: string | undefined
+//   pageSize?: string | undefined
+// }
 
 export async function GET(req:NextRequest){
   const session = await auth();

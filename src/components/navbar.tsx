@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import {UserCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
-import LoadingSpinner from './spinners';
 
 const dropdownVariants: Variants = {
   hidden: { opacity: 0, y: -10 },

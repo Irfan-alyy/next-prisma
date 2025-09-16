@@ -25,9 +25,9 @@ const FilterModal = ({ search}: { search: string;}) => {
     setFilter({ ...filter, [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value });
   };
 
-  const handleSalaryChange = (min: string, max: string) => {
-    setFilter({ ...filter, salaryMin: min, salaryMax: max });
-  };
+  // const handleSalaryChange = (min: string, max: string) => {
+  //   setFilter({ ...filter, salaryMin: min, salaryMax: max });
+  // };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

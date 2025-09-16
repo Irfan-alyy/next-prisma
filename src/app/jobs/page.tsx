@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft, FilterIcon } from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
+import { Search, Briefcase, MapPin, DollarSign, ChevronRight, ChevronLeft} from 'lucide-react'; // Importing icons from lucide-react// Importing framer-motion for animations
 import { Metadata } from 'next';
 import { getJobs } from '@/lib/jobs';
 import FilterModal from './filterModal';
