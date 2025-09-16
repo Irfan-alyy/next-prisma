@@ -456,7 +456,7 @@ const DashboardPage: React.FC = () => {
                   ) : (
                     <div>
                       <div className="space-y-4">
-                        {jobs.map((job) => (
+                        {jobs?.map((job) => (
                           <motion.div
                             key={job.id as string}
                             variants={itemVariants}
