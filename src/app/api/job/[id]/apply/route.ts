@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { unlink, writeFile } from "fs/promises";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -36,8 +37,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if( fileWritten ){
             await unlink(fullPath)
         }
-        if(error?.code==="P2002"){
-            return NextResponse.json({message:"You can't apply multiple times for same job"},{status:400})
+        if(error instanceof PrismaClientKnownRequestError){
+            if(error?.code==="P2002"){
+                return NextResponse.json({message:"You can't apply multiple times for same job"},{status:400})
+            }
         }
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         console.log(errorMessage);
