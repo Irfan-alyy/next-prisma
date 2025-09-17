@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const page = params.get("page");
   const pageSize = params.get("pageSize");
   const status = params.get("type");
-  console.log(page, pageSize);
+  // console.log(page, pageSize);
   let statusFilter={};
   if (status?.toLowerCase() === "pending") {
     statusFilter = {

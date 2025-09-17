@@ -13,7 +13,7 @@ export async function GET(req:NextRequest){
   const params= req.nextUrl.searchParams
   const page= params.get("page")
   const pageSize=params.get("pageSize")
-  console.log(page,pageSize);
+  // console.log(page,pageSize);
     // console.log(session);
   if (!session?.user?.id) {
     return NextResponse.json(

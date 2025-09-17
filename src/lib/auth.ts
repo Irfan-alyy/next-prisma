@@ -7,6 +7,7 @@ import prisma from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
+    trustHost:true,
     providers: [Github, Google, NodeMailer({
         server: process.env.EMAIL_SERVER,
         from: process.env.EMAIL_FROM,

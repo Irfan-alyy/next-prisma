@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  console.log(id);
+  // console.log(id);
   try {
     const data = await prisma.job.findUnique({
       where: { id },

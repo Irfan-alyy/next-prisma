@@ -38,7 +38,7 @@ export async function PUT(request: Request) {
   const name = formData.get("name") as string | null;
   const imageFile = formData.get("image") as File | null;
   const removeImage = formData.get("removed") as string | null;
-  console.log(type, name, imageFile, removeImage);
+  // console.log(type, name, imageFile, removeImage);
   if (!["candidate", "employer"].includes(type)) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
@@ -88,7 +88,7 @@ export async function PUT(request: Request) {
     }
     updateData.image = undefined;
     const filePath = await saveImage(imageFile, session.user.id);
-    console.log(filePath);
+    // console.log(filePath);
     updateData.image = filePath;
   }
   const user = await prisma.user.update({
