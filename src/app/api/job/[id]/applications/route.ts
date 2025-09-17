@@ -44,11 +44,10 @@ export async function GET(
     }
     return NextResponse.json(applications);
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     return NextResponse.json(
       {
-        message: error?.message
-          ? error?.message
-          : " Error occured fetching application",
+        message: errorMessage
       },
       { status: 500 }
     );

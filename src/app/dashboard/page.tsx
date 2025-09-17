@@ -90,9 +90,10 @@ const DashboardPage: React.FC = () => {
         .then((data) => setUser(data?.user))
         .finally(() => setLoading(false));
     } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
       console.log(
         "Error occured in fetching user data",
-        error?.message
+        errorMessage
       );
     }
   }, []);
@@ -155,12 +156,12 @@ const DashboardPage: React.FC = () => {
     switch (tab) {
       case "job":
         setCurrentJPage(1);
-        !!(jobs && jobs.length > 0) || fetchJobs();
+        if(jobs?.length === 0 || !jobs) fetchJobs();
         setActiveTab("jobs");
         break;
       case "application":
         setCurrentAPage(1);
-        !!(applications && applications.length > 0) || fetchApplications();
+        if(applications?.length === 0 || !applications) fetchApplications();
         setActiveTab("applications");
         break;
       default:

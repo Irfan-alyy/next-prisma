@@ -6,7 +6,7 @@ import { unlink, writeFile } from "fs/promises";
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const data= await req.formData()
-    const file= data.get("cv")
+    const file= data.get("cv") as File
     if(!file){
         return NextResponse.json({message:"CV not provided"},{status:400})
     }
@@ -39,7 +39,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if(error?.code==="P2002"){
             return NextResponse.json({message:"You can't apply multiple times for same job"},{status:400})
         }
-        console.log(error?.message);
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        console.log(errorMessage);
         
         return NextResponse.json({ error }, { status: 500 })
     }
