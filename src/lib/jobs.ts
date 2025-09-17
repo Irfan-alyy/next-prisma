@@ -1,4 +1,4 @@
-import { Job } from "@/lib/types";
+import type { Job } from "@prisma/client";
 import prisma from "./prisma";
 import { JobSearchParams } from "@/app/jobs/page";
 export async function getJobs(
@@ -61,7 +61,10 @@ export async function getJobs(
     totalJobs = await prisma.job.count({ where });
     // console.log(filteredJobs);
   } catch (error: unknown) {
-    console.log("Error Occured during fetching jobs", error?.message);
+    if(error instanceof Error){
+
+      console.log("Error Occured during fetching jobs", error?.message);
+    }
   }
   return { jobs, totalJobs };
 }

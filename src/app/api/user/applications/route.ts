@@ -143,11 +143,13 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error: unknown) {
-    console.log(
-      error.message
+    if(error instanceof Error){
+      console.log(
+        error.message
         ? error.message
         : "Error occure during fetching applications"
-    );
+      );
+    }
     return NextResponse.json({ error }, { status: 500 });
   }
 }

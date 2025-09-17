@@ -81,7 +81,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, type, data
               <Calendar className="h-5 w-5 text-indigo-600 mr-3" />
               <p className="text-gray-700">
                 <span className="font-semibold">Posted:</span>{' '}
-                {new Date((data as Job).postedAt).toLocaleDateString()}
+                {new Date((data as Job).postedAt as string).toLocaleDateString()}
               </p>
             </div>
           </div>

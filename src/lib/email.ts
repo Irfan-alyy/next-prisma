@@ -1,11 +1,12 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer"
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
-const transporter = nodemailer.createTransport({
+
+const transporter = nodemailer.createTransport( new SMTPTransport({
   host: 'smtp.freesmtpservers.com',
   port: 25,
-  secure: false, // No TLS for port 25
-  auth: null, // No authentication required
-});
+  secure: false, // No TLS for port 25// No authentication required
+}));
 
 export async function sendEmail(to: string, subject: string, text: string, from: string = '"JobBoard Team" <no-reply@jobboard.com>') {
   try {

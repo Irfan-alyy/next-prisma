@@ -65,7 +65,7 @@ const JobDetailsPage: React.FC = () => {
     for (const [key, value] of submissionData.entries()) {
       console.log(`${key}: ${value}`);
     }
-    fetch(`/api/job/${job.id}/apply`, { method: "POST", body: submissionData })
+    fetch(`/api/job/${(job as Job).id}/apply`, { method: "POST", body: submissionData })
       .then(async res => {
         if (!res.ok) {
          return res.json().then(errorData => {
