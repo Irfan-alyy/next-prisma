@@ -39,6 +39,10 @@ const ContactPage: React.FC = () => {
       setSuccess('Your message has been sent! We’ll get back to you soon.');
       setFormData({ name: '', email: '', message: '' });
     } catch (err) {
+      if(err instanceof Error){
+        console.log(err.message);
+        
+      }
       setError('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
