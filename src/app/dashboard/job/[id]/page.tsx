@@ -70,7 +70,7 @@ const JobDetailPage: React.FC = () => {
       });
       if (res.ok) {
         const data = await res.json()
-        console.log(data);
+        // console.log(data);
         setJob(data);
       }
     } catch (error) {

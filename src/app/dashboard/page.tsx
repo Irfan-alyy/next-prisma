@@ -63,9 +63,10 @@ const buttonVariants: Variants = {
 const DashboardPage: React.FC = () => {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<
-    "profile" | "jobs" | "applications"
+    "profile" | "jobs" | "applications" | "users"
   >("profile");
   const [user, setUser] = useState<User>();
+  const [users, setUsers] = useState<Array<User>>();
   const [jobs, setJobs] = useState<Array<Job>>([]);
   const [applications, setApplications] = useState<Array<Application>>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
@@ -75,11 +76,11 @@ const DashboardPage: React.FC = () => {
   >("job");
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFilter, setSelectedFilter] = useState<
-    "all" | "accepted" | "pending" | "rejected"
+    "all" | "accepted" | "pending" | "rejected" | "candidate" | "employer"
   >("all");
   const [currentJPage, setCurrentJPage] = useState<number>(1);
   const [currentAPage, setCurrentAPage] = useState<number>(1);
-  const pageSize=10
+  const pageSize = 10;
   const [totalJPages, setTotalJPages] = useState<number>(1);
   const [totalAPages, setTotalAPages] = useState<number>(1);
   useEffect(() => {
@@ -90,11 +91,9 @@ const DashboardPage: React.FC = () => {
         .then((data) => setUser(data?.user))
         .finally(() => setLoading(false));
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-      console.log(
-        "Error occured in fetching user data",
-        errorMessage
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      console.log("Error occured in fetching user data", errorMessage);
     }
   }, []);
 
@@ -132,6 +131,16 @@ const DashboardPage: React.FC = () => {
       })
       .finally(() => setLoading(false));
   };
+  const fetchAllUsers = () => {
+    setLoading(true);
+    fetch(`/api/user/users?page=${currentAPage}&pageSize=${pageSize}&type=${selectedFilter}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data?.users);
+        setTotalAPages(data?.totalPages);
+      })
+      .finally(() => setLoading(false));
+  };
   const fetchJobs = () => {
     setLoading(true);
     fetch(`/api/user/jobs?page=${currentJPage}&pageSize=${pageSize}`)
@@ -143,26 +152,37 @@ const DashboardPage: React.FC = () => {
       .finally(() => setLoading(false));
   };
   useEffect(() => {
-    if(activeTab === "jobs"){
+    if (activeTab === "jobs") {
       fetchJobs();
-  }}, [currentJPage, pageSize]);
+    }
+  }, [currentJPage, pageSize]);
   useEffect(() => {
-    if(activeTab == "applications"){
+    if (activeTab == "applications") {
       fetchApplications();
-    } 
+    }
+    if(activeTab==="users"){
+      fetchAllUsers()
+    }
   }, [currentAPage, selectedFilter, pageSize]);
 
   const handleTabChange = (tab: string) => {
     switch (tab) {
       case "job":
         setCurrentJPage(1);
-        if(jobs?.length === 0 || !jobs) fetchJobs();
+        if (jobs?.length === 0 || !jobs) fetchJobs();
         setActiveTab("jobs");
         break;
       case "application":
+        setSelectedFilter("all")
         setCurrentAPage(1);
-        if(applications?.length === 0 || !applications) fetchApplications();
+        if (applications?.length === 0 || !applications) fetchApplications();
         setActiveTab("applications");
+        break;
+      case "users":
+        setSelectedFilter("all")
+        setCurrentAPage(1);
+        if (users?.length === 0 || !users) fetchAllUsers();
+        setActiveTab("users");
         break;
       default:
         setActiveTab("profile");
@@ -343,6 +363,18 @@ const DashboardPage: React.FC = () => {
                     : "My Applications"}
                 </button>
               )}
+              {session?.user?.type === "admin" && (
+                <button
+                  onClick={() => handleTabChange("users")}
+                  className={`px-6 py-3 text-base font-medium rounded-md shadow-sm transition duration-200 ${
+                    activeTab === "users"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  All Users
+                </button>
+              )}
             </div>
 
             <motion.div
@@ -480,7 +512,9 @@ const DashboardPage: React.FC = () => {
                               <button
                                 title="delete"
                                 className="text-red-600 hover:text-red-800"
-                                onClick={() => handleJobDelete(job.id as string)}
+                                onClick={() =>
+                                  handleJobDelete(job.id as string)
+                                }
                               >
                                 <Trash2 className="h-5 w-5" />
                               </button>
@@ -696,6 +730,211 @@ const DashboardPage: React.FC = () => {
                             </p>
                           </motion.div>
                         ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center w-full justify-center">
+                    {totalAPages > 0 && (
+                      <div className="mt-12 flex justify-center flex-wrap px-5 sm:px-15 md:px-30 items-center">
+                        {/* Previous Button */}
+                        <div>
+                          <button
+                            onClick={() => setCurrentAPage((prev) => prev - 1)}
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentAPage === 1
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            <ChevronLeft className="h-5 w-5 mr-2" />
+                            Previous
+                          </button>
+                        </div>
+
+                        {/* Page Numbers */}
+                        {currentAPage > 3 && (
+                          <button
+                            onClick={() => setCurrentAPage(1)}
+                            className={`px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium
+                   bg-white text-gray-700 hover:bg-gray-100'
+                } shadow-lg transition duration-300 transform`}
+                          >
+                            First Page
+                          </button>
+                        )}
+
+                        {currentAPage > 3 && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                   shadow-lg transition duration-300 transform "
+                          >
+                            ...
+                          </div>
+                        )}
+                        {Array.from(
+                          { length: totalAPages },
+                          (_, i) => i + 1
+                        ).map((pageNum) => {
+                          return pageNum < currentAPage + 5 ? (
+                            <div key={pageNum}>
+                              {currentAPage - pageNum > 2 || (
+                                <button
+                                  onClick={() => setCurrentAPage(pageNum)}
+                                  className={`px-4 py-2 mx-2 my-2 rounded-md text-sm font-medium ${
+                                    pageNum === currentAPage
+                                      ? "bg-indigo-600 text-white"
+                                      : "bg-white text-gray-700 hover:bg-gray-100"
+                                  } shadow-lg transition duration-300 transform`}
+                                >
+                                  {pageNum}
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            ""
+                          );
+                        })}
+                        {currentAPage + 5 < totalAPages && (
+                          <div
+                            className="px-4 mx-2 my-2 py-2 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-100
+                      } shadow-lg transition duration-300 transform "
+                          >
+                            ...
+                          </div>
+                        )}
+
+                        {currentAPage < totalAPages - 4 && (
+                          <button
+                            onClick={() => setCurrentAPage(totalAPages)}
+                            className={`px-4 mx-2  my-2 py-2 rounded-md text-sm font-medium
+                                              bg-white text-gray-700 hover:bg-gray-100'
+                                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Last Page
+                          </button>
+                        )}
+                        {/* Next Button */}
+                        <div>
+                          <button
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${
+                              currentAPage === totalAPages
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            } shadow-lg transition duration-300 transform`}
+                          >
+                            Next
+                            <ChevronRight className="h-5 w-5 ml-2" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {activeTab === "users" && (
+                <div className="space-y-6">
+                  <div className="flex justify-between">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+                      All Users
+                    </h2>
+                    <div>
+                      <div className="flex gap-5 w-full justify-evenly text-black">
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("all");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "all"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          }  rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          All
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("employer");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "employer"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Employers
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedFilter("candidate");
+                            setCurrentAPage(1);
+                          }}
+                          className={`inline-flex items-center justify-center w-25 py-2 ${
+                            selectedFilter == "candidate"
+                              ? "bg-indigo-600 text-white"
+                              : "text-black"
+                          } rounded-md shadow-lg hover:bg-indigo-700 hover:text-white transition duration-300 transform hover:scale-105`}
+                        >
+                          Candidates
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  {loading ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-black text-lg font-semibold text-center"
+                    >
+                      <LoadingSpinner
+                        variant="bars"
+                        size="small"
+                        className="text-indigo-600"
+                      />
+                    </motion.div>
+                  ) : users?.length === 0 ? (
+                    <p className="text-gray-600 text-center">
+                      {session.user.type == "admin"
+                        ? "No applications found"
+                        : "You haven’t applied to any jobs yet."}
+                    </p>
+                  ) : (
+                    <div>
+                      <div className="space-y-4">
+                        {users &&
+                          users.map((user) => (
+                            <motion.div
+                              key={user.id as string}
+                              variants={itemVariants}
+                              className="flex w-full gap-5 justify-between border border-gray-200 rounded-md p-4 cursor-pointer"
+                            >
+                              <div className=" min-w-25">
+                                <img
+                                  src={user?.image as string}
+                                  alt="User Avatar"
+                                  className=" w-22  h-22 object-cover w-24 h-24 rounded-full shadow-md"
+                                />
+                              </div>
+                              <div className="flex w-full flex-col justify-start">
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                  {user.name}
+                                </h3>
+                                <p className="text-gray-500 text-sm">
+                                  Status: {user?.email}
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                  User Type: {user?.type}
+                                </p>
+
+                                <p className="text-gray-500 text-sm">
+                                  Created At:{" "}
+                                  {new Date(user?.createdAt)?.toLocaleString()}
+                                </p>
+                              </div>
+                            </motion.div>
+                          ))}
                       </div>
                     </div>
                   )}
