@@ -925,7 +925,7 @@ const DashboardPage: React.FC = () => {
                                   Status: {user?.email}
                                 </p>
                                 <p className="text-gray-500 text-sm">
-                                  User Type: {user?.type}
+                                  User Type: {user?.type.charAt(0)?.toLocaleUpperCase()}{user?.type?.slice(1)} 
                                 </p>
 
                                 <p className="text-gray-500 text-sm">

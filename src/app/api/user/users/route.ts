@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
   try {
     let users;
     let count=0;
-    let where={};
+    let where={
+    };
     if(type){
         where={
             type:type
@@ -38,7 +39,11 @@ export async function GET(req: NextRequest) {
 
     count= await prisma.user.count()
     users= await prisma.user.findMany({
-        where,
+        where:{ AND:[
+            where,
+           { type:{not:"admin"}}
+        ]
+        },
         skip:(page-1) * pageSize,
         take:pageSize
     })
