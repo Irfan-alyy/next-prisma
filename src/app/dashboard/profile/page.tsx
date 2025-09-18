@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 const ProfilePage: React.FC = () => {
   const { data: session, update } = useSession();
-  const [role, setRole] = useState<string>("candidate");
+  const [role, setRole] = useState<string>(session?.user?.type as string || "");
   const [name, setName] = useState<string>(session?.user?.name || "")
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>();
@@ -182,13 +182,20 @@ const ProfilePage: React.FC = () => {
                 onChange={(e) => setRole(e.target.value as 'candidate' | 'employer')}
                 className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-200"
               >
-                <option value="candidate">{session?.user?.type?.toLocaleUpperCase()}</option>
                 { session?.user?.type==="employer" &&
+                (
+                  <>
+                  <option value="employer">Employer</option>
                   <option value="candidate">Candidate</option>
-                  
+                  </>
+                ) 
                 } 
                 {session?.user?.type==="candidate" &&
-                  <option value="employer">Employer</option>
+                <>
+                <option value="candidate" selected>Candidate</option>
+                <option value="employer">Employer</option>
+                
+                </>
                 }
               </select>
             </div>

@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
   console.log("usertype", type);
   
   try {
-    let users;
     let count=0;
     let where={
     };
@@ -38,7 +37,7 @@ export async function GET(req: NextRequest) {
     }
 
     count= await prisma.user.count()
-    users= await prisma.user.findMany({
+    const users= await prisma.user.findMany({
         where:{ AND:[
             where,
            { type:{not:"admin"}}
