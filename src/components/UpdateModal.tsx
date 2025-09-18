@@ -47,7 +47,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ isOpen, onClose, type, data, 
       submissionData.append(key, value);
     });
     if (cvFile) submissionData.append('resume', cvFile);
-    console.log(formData);
+    // console.log(formData);
     onSubmit(formData);
     onClose();
   };

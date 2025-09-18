@@ -62,9 +62,9 @@ const JobDetailsPage: React.FC = () => {
     submissionData.append('email', formData.email);
     submissionData.append('coverLetter', formData.coverLetter);
     if (formData.cv) submissionData.append('cv', formData.cv);
-    for (const [key, value] of submissionData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // for (const [key, value] of submissionData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
     fetch(`/api/job/${(job as Job).id}/apply`, { method: "POST", body: submissionData })
       .then(async res => {
         if (!res.ok) {
@@ -76,7 +76,7 @@ const JobDetailsPage: React.FC = () => {
          return res.json()
       })
       .then(data => {
-        console.log(data);
+        // console.log(data);
         setFormData(prev => ({ ...prev, name: "", email: "", coverLetter: "" }));
         toast.success(data?.message)
       }).catch(err => {

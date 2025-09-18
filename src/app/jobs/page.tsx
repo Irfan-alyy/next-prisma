@@ -33,7 +33,7 @@ const JobsPage = async ({ searchParams }: { searchParams: Promise<JobSearchParam
   const {jobs, totalJobs}= await getJobs(params, currentPage,JobsPerPage)
   const totalPages = Math.ceil(totalJobs / JobsPerPage)
   const queryObj = Object.fromEntries(Object.entries(searchParams));
-  console.log(queryObj,"query object");
+  // console.log(queryObj,"query object");
   
   return (
     <div className="min-h-screen bg-gray-50 font-inter">

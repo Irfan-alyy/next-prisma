@@ -56,7 +56,7 @@ const FilterModal = ({ search}: { search: string;}) => {
     else currentParams.delete("remote");
 
     const newUrl= `${window.location.pathname}?${currentParams.toString()}`
-    console.log(newUrl);
+    // console.log(newUrl);
     router.push(newUrl,{scroll:false})
     setShowModal(false);
   };
